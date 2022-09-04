@@ -35,6 +35,20 @@ class HomeViewModel : ViewModel() {
         }.addOnFailureListener {
             totalSpending.value=0
         }
+        transactionController.getAll(TransactionType.Spending).addOnSuccessListener { result ->
+            result.documents.forEach { item ->
+                item.reference.addSnapshotListener(
+                    EventListener<DocumentSnapshot>{value,error->
+                        if (value!= null)
+                        {
+                            totalSpending.value = totalSpending.value?.minus(value.data?.get("value").toString().toInt())
+                        }
+                    }
+                )
+            }
+        }.addOnFailureListener {
+            totalSpending.value=0
+        }
         return totalSpending
     }
     fun GetallData():LiveData<List<Transaction>>{
