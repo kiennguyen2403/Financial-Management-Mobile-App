@@ -1,7 +1,6 @@
 package com.example.customproject.controller
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.example.customproject.model.Tag
 import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
@@ -10,24 +9,27 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
+import java.util.*
+import kotlin.collections.HashMap
 
 class TransactionController {
     val dbinstance= Firebase.firestore
-    fun Create(_type: TransactionType, _value:Number, _desc:String, _tag: Tag): Transaction
+    fun Create(_type: TransactionType, _value:Number, _desc:String): Transaction
     {
-        val transaction = Transaction(_type,_value, _desc, _tag)
+        val transaction = Transaction(_value, _desc, Timestamp.now())
         return transaction;
     }
 
-    fun Add(transaction: Transaction){
-        val immutableMap: Map<String, String> = mapOf(
-            "type" to transaction.type.toString(),
-            "value" to transaction.value.toString(),
+    fun Add(transaction: Transaction,transactionType: TransactionType,tag:String){
+        val immutableMap = hashMapOf(
+            "value" to transaction.value,
             "desc" to transaction.desc,
-            "tag" to transaction.tag.toString()
-
+            "date" to Timestamp.now()
         )
-        dbinstance.collection(transaction.type.toString()).add(immutableMap)
+        dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag).add(immutableMap)
             .addOnSuccessListener { result ->
                 Log.d("200", "DocumentSnapshot added with ID: ${result}")
             }
@@ -38,18 +40,18 @@ class TransactionController {
     }
 
 
-    fun Update(transaction: Transaction, data:Map<String,String>)
+    fun Update(transaction: Transaction,transactionType: TransactionType,tag: String, data:HashMap<String,Any>)
     {
-        dbinstance.collection(transaction.type.toString())
+        dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag)
             .document()
             .update(data)
             .addOnSuccessListener { Log.d("200", "DocumentSnapshot successfully updated!") }
             .addOnFailureListener { e -> Log.w("404", "Error updating document", e) }
     }
 
-    fun Delete(transaction: Transaction)
+    fun Delete(transaction: Transaction,transactionType: TransactionType,tag: String)
     {
-        dbinstance.collection(transaction.type.toString())
+        dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag)
             .document()
             .delete()
             .addOnSuccessListener { Log.d("200", "DocumentSnapshot successfully deleted!") }
@@ -57,18 +59,17 @@ class TransactionController {
     }
 
 
-    fun Get(transactionType: TransactionType, path:String): DocumentReference {
+    fun getSpecific(transactionType: TransactionType, tag: String): Task<QuerySnapshot> {
 
 
-       var documentreference =  dbinstance.collection(transactionType.toString())
-            .document(path)
-
-        return documentreference
+       val collectionreference =  dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag).get()
+        return collectionreference
     }
 
-    fun getAll(transactionType: TransactionType):Task<QuerySnapshot>{
-        var snapshot = dbinstance.collection(transactionType.toString()).get()
+    fun getAll(transactionType: TransactionType):Task<DocumentSnapshot>{
+        val snapshot = dbinstance.collection("Transaction").document(transactionType.toString()).get()
         return snapshot
     }
+
 }
 

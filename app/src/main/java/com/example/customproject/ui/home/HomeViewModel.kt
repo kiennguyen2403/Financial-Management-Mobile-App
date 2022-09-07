@@ -14,64 +14,109 @@ import java.util.*
 
 class HomeViewModel : ViewModel() {
     val transactionController=TransactionController()
-    var totalSpending: MutableLiveData<Int> = MutableLiveData(0)
-    var transactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
+    var total: MutableLiveData<Int> = MutableLiveData(0)
+    var incometransactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
+    var spendingtransactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
 
 
-
-    fun GetTotal():LiveData<Int>{
-        totalSpending.value=0
-        transactionController.getAll(TransactionType.Income).addOnSuccessListener { result ->
-            result.documents.forEach { item ->
-                item.reference.addSnapshotListener(
-                    EventListener<DocumentSnapshot>{value,error->
-                        if (value!= null)
-                        {
-                            totalSpending.value = totalSpending.value?.plus(value.data?.get("value").toString().toInt())
+    fun getTotal():LiveData<Int>{
+        total.value=0
+        var list :MutableList<String> = mutableListOf()
+        transactionController.getAll(TransactionType.Income).addOnSuccessListener {
+            list = it.data?.get("tag") as MutableList<String>
+            list.forEach { it ->
+                transactionController.getSpecific(TransactionType.Income,it).addOnSuccessListener{
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{value,error->
+                            if (value != null)
+                            {
+                                if (value.data?.get("value") != null)
+                                {
+                                    total.value = total.value?.plus(value.data?.get("value").toString().toInt())
+                                }
+                            }
                         }
                     }
-                )
+                }
             }
         }.addOnFailureListener {
-            totalSpending.value=0
+            Log.d("404",it.message.toString())
         }
-        transactionController.getAll(TransactionType.Spending).addOnSuccessListener { result ->
-            result.documents.forEach { item ->
-                item.reference.addSnapshotListener(
-                    EventListener<DocumentSnapshot>{value,error->
-                        if (value!= null)
-                        {
-                            totalSpending.value = totalSpending.value?.minus(value.data?.get("value").toString().toInt())
+
+        transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
+            list = it.data?.get("tag") as MutableList<String>
+            list.forEach { it ->
+                transactionController.getSpecific(TransactionType.Spending,it).addOnSuccessListener{
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{value,error->
+                            if (value != null)
+                            {
+                                if (value.data?.get("value") != null) {
+                                    total.value = total.value?.minus(
+                                        value.data?.get("value").toString().toInt()
+                                    )
+                                }
+                            }
                         }
                     }
-                )
+                }
             }
         }.addOnFailureListener {
-            totalSpending.value=0
+            Log.d("404",it.message.toString())
         }
-        return totalSpending
+        return total
     }
-    fun GetallData():LiveData<List<Transaction>>{
-        var list:MutableList<Transaction> = mutableListOf()
-        transactionController.getAll(TransactionType.Income).addOnSuccessListener { result ->
-            result.documents.forEach { item->
-                item.reference.addSnapshotListener(
-                    EventListener<DocumentSnapshot> { value, error ->
-                        if (value != null) {
-                            val tag = Tag("Eating")
-                            val newtransaction = transactionController.Create(TransactionType.Income,
-                                value.data?.get("value").toString().toInt(),
-                                value.data?.get("desc").toString(),
-                                tag
-                            )
-                            list.add(newtransaction)
-                            transactionlist.value=list
+    fun getallIncomeData():LiveData<List<Transaction>>{
+        var list:MutableList<String> = mutableListOf()
+        var translist: MutableList<Transaction> = mutableListOf()
+        transactionController.getAll(TransactionType.Income).addOnSuccessListener {
+            list = it.data?.get("tag") as MutableList<String>
+            list.forEach { item ->
+                transactionController.getSpecific(TransactionType.Income,item).addOnSuccessListener {
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{ value,error ->
+                            if (value != null)
+                            {
+                                if(value.data?.get("value") != null) {
+                                    var newtransaction = transactionController.Create(
+                                        TransactionType.Income,
+                                        value.data?.get("value") as Long,
+                                        value.data?.get("desc") as String
+                                    )
+                                    translist.add(newtransaction)
+                                    incometransactionlist.value = translist
+                                    Log.d("200", translist.toString())
+                                }
+                            }
                         }
                     }
-                )
+                }
             }
         }
-        return transactionlist
+        return incometransactionlist
+    }
+    fun getallSpendingData():LiveData<List<Transaction>>{
+        var list:MutableList<String> = mutableListOf()
+        var translist: MutableList<Transaction> = mutableListOf()
+        transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
+            list = it.data?.get("tag") as MutableList<String>
+            list.forEach { item ->
+                transactionController.getSpecific(TransactionType.Spending,item).addOnSuccessListener {
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{ value,error ->
+                            if (value != null)
+                            {
+                                var newtransaction = transactionController.Create(TransactionType.Spending,value.data?.get("value") as Long,value.data?.get("desc") as String )
+                                translist.add(newtransaction)
+                                spendingtransactionlist.value = translist
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return spendingtransactionlist
     }
 
 }

@@ -1,12 +1,15 @@
-package com.example.customproject.ui.income
+package com.example.customproject.ui.notifications
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customproject.R
+import com.example.customproject.model.Notification
+import java.sql.Timestamp
 
-class CustomAdapter(private val mList: List<String>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private val mList: List<Notification>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,13 +24,13 @@ class CustomAdapter(private val mList: List<String>) : RecyclerView.Adapter<Cust
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val tag= mList[position]
+        val notification= mList[position]
 
         // sets the image to the imageview from our itemHolder class
         // sets the text to the textview from our itemHolder class
-        holder.desc.text = tag
-
-
+        Log.d("200",notification.date.toString())
+        holder.desc.text = notification.desc
+       // holder.date.text = "Sep 4, 2022"
     }
 
     // return the number of the items in the list
@@ -38,5 +41,6 @@ class CustomAdapter(private val mList: List<String>) : RecyclerView.Adapter<Cust
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val desc: TextView = itemView.findViewById(R.id.desc)
+        // val date:TextView = itemView.findViewById(R.id.date)
     }
 }

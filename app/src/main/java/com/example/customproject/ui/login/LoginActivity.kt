@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.customproject.MainActivity
 import com.example.customproject.databinding.ActivityLoginBinding
@@ -92,21 +93,27 @@ class LoginActivity : AppCompatActivity() {
             }
 
             setOnEditorActionListener { _, actionId, _ ->
+
                 when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
+                    EditorInfo.IME_ACTION_DONE -> {
+                        /*
                         loginViewModel.login(
                             username.text.toString(),
-                            password.text.toString()
-                        )
+                            password.text.toString(),
+                        )*/
+                        loading.visibility = View.VISIBLE
+                        signIn(username.text.toString(), password.text.toString(),loading)
+                    }
                 }
                 false
             }
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                startActivity(intent)
-                //loginViewModel.login(username.text.toString(), password.text.toString())
+                signIn(username.text.toString(), password.text.toString(),loading)
+                /*
+                loginViewModel.login(username.text.toString(), password.text.toString()
+                 */
             }
         }
     }
@@ -135,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
 
     }
     private fun reload() {
-        TODO("Not yet implemented")
+
     }
 
     public fun createAccount(email:String,password:String){
@@ -146,7 +153,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("200", "createUserWithEmail:success")
                     val user = auth.currentUser
                     //  updateUI(user)
-                    updateUI(user)
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("404", "createUserWithEmail:failure", task.exception)
@@ -157,7 +164,7 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun signIn(email: String, password: String) {
+    private fun signIn(email: String, password: String,loading:ProgressBar) {
         // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -166,16 +173,18 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("200", "signInWithEmail:success")
                     val user = auth.currentUser
                     if (user != null) {
-                        updateUI(user)
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
                     }
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("200", "signInWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()
-                    updateUI(null)
+                    loading.visibility = View.GONE
                 }
             }
+
         // [END sign_in_with_email]
     }
 

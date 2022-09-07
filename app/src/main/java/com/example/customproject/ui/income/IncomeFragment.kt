@@ -18,6 +18,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customproject.controller.NotificationController
+import com.example.customproject.controller.TagController
 import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentIncomeBinding
 import com.example.customproject.model.Tag
@@ -31,8 +33,9 @@ import kotlin.jvm.internal.Intrinsics
 class IncomeFragment : Fragment() {
 
     private var _binding: FragmentIncomeBinding? = null
-    private var transactionController: TransactionController = TransactionController()
-
+    private val transactionController: TransactionController = TransactionController()
+    private val tagController:TagController = TagController()
+    private val notificationController: NotificationController = NotificationController()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -52,7 +55,7 @@ class IncomeFragment : Fragment() {
         var adapter:CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null,LinearLayoutManager.VERTICAL ,false)
 
-        incomeViewModel.GetallData().observe(viewLifecycleOwner, Observer<List<Transaction>>() {
+        incomeViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<String>>() {
            if (it.size>0) {
                adapter = CustomAdapter(it)
                recycleview.adapter = adapter
@@ -79,11 +82,20 @@ class IncomeFragment : Fragment() {
             descinput.setGravity( Gravity.CENTER)
             descinput.setLayoutParams(layoutParams);
 
+            val taginput = EditText(activity)
+            taginput.setHint("Tag")
+            taginput.setGravity( Gravity.CENTER)
+            taginput.setLayoutParams(layoutParams);
+            taginput.setOnClickListener {
+
+            }
+
             val lp = LinearLayout(activity)
             lp.setOrientation( LinearLayout.VERTICAL )
 
             lp.addView( valueinput ,layoutParams);
             lp.addView( descinput,layoutParams );
+            lp.addView(taginput,layoutParams)
 
 
 
@@ -92,9 +104,9 @@ class IncomeFragment : Fragment() {
 
             builder.setMessage(" New Income")
                 .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
-                    val tag = Tag("Food")
-                    var result = transactionController.Create(TransactionType.Income,valueinput.text.toString().toInt(),descinput.text.toString(),tag)
-                    transactionController.Add(result)
+                    var result = transactionController.Create(TransactionType.Income,valueinput.text.toString().toInt(),descinput.text.toString())
+                    notificationController.Add("You have earn " + valueinput.text+" for "+ descinput.toString() )
+                    transactionController.Add(result,TransactionType.Income,taginput.text.toString())
                     val myToast = Toast.makeText(activity,"Add Successfully",Toast.LENGTH_SHORT)
                     myToast.setGravity(Gravity.LEFT,200,200)
                     myToast.show()
@@ -106,9 +118,6 @@ class IncomeFragment : Fragment() {
             val alertdialog = builder.create()
             alertdialog.show()
         }
-
-
-
 
         return root
     }

@@ -1,6 +1,7 @@
 package com.example.customproject.ui.home
 
 import android.graphics.Color
+import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentHomeBinding
 import com.example.customproject.model.Transaction
 import com.github.mikephil.charting.animation.Easing
@@ -19,12 +21,14 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.Timestamp
 
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private lateinit var pieChart:PieChart
+    private lateinit var spendingpieChart:PieChart
+    private lateinit var incomepieChart: PieChart
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -42,17 +46,47 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        homeViewModel.GetTotal()
-        homeViewModel.totalSpending.observe(viewLifecycleOwner) {
-            textView.text = "Total Income: "+it.toString()+"$"
+        homeViewModel.getTotal().observe(viewLifecycleOwner) {
+            if (it != null) {
+                textView.text = "Total: " + it.toString() + "$"
+            }
         }
 
 
-        pieChart= binding.piechart
-        setupPieChart();
-        homeViewModel.GetallData().observe(viewLifecycleOwner) { it ->
-            loadPieChartData(it)
+        spendingpieChart= binding.spendingpiechart
+        setupPieChart(spendingpieChart);
+        homeViewModel.getallSpendingData().observe(viewLifecycleOwner) { it ->
+            if (it.size>0) {
+                loadPieChartData(it,spendingpieChart)
+            }
+            else {
+                var list : MutableList<Transaction> = mutableListOf()
+                val transaction = Transaction(
+                    0,"No transactions found", Timestamp.now()
+                )
+                list.add(transaction)
+                loadPieChartData(list,spendingpieChart)
+            }
         }
+
+        /*
+        incomepieChart= binding.incomepiechart
+        setupPieChart(incomepieChart);
+        homeViewModel.getallIncomeData().observe(viewLifecycleOwner) {
+            if (it.size>0) {
+                loadPieChartData(it,incomepieChart)
+            }
+            else {
+                var list : MutableList<Transaction> = mutableListOf()
+                val transaction = Transaction(
+                    0,"No transactions found", Timestamp.now()
+                )
+                list.add(transaction)
+                loadPieChartData(list,incomepieChart)
+            }
+        }
+        */
+
         return root
     }
 
@@ -62,7 +96,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun loadPieChartData(transactionlist: List<Transaction>) {
+    private fun loadPieChartData(transactionlist: List<Transaction>,pieChart: PieChart) {
         val entries: ArrayList<PieEntry> = ArrayList()
         transactionlist.forEach { item->
             entries.add(PieEntry(item.value.toFloat(), item.desc))
@@ -81,11 +115,11 @@ class HomeFragment : Fragment() {
         data.setValueFormatter(PercentFormatter(pieChart))
         data.setValueTextSize(12f)
         data.setValueTextColor(Color.BLACK)
-        pieChart.data = data
+        spendingpieChart.data = data
         pieChart.invalidate()
         pieChart.animateY(1400, Easing.EaseInOutQuad)
     }
-    private fun setupPieChart() {
+    private fun setupPieChart(pieChart: PieChart) {
         pieChart.isDrawHoleEnabled = true
         pieChart.setUsePercentValues(true)
         pieChart.setEntryLabelTextSize(12f)

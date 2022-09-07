@@ -1,12 +1,11 @@
 package com.example.customproject.model
 
-class Transaction(_type: TransactionType, _value:Number, _desc:String, _tag:Tag){
+import com.google.firebase.Timestamp
 
-    var type:TransactionType=_type
-    get()= field
-    set(value){
-        this.type=value
-    }
+
+class Transaction( _value:Number, _desc:String,_date:Timestamp){
+
+
 
     var value:Number=_value
     get()=field
@@ -20,9 +19,10 @@ class Transaction(_type: TransactionType, _value:Number, _desc:String, _tag:Tag)
         this.desc=value
     }
 
-    var tag:Tag = _tag
-    get() = field
-    set(value){
-        this.tag=value
-    }
+    var date:Timestamp= _date
+        get() = field
+        set(value) {
+            this.date=value
+        }
+
 }

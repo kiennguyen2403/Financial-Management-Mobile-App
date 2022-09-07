@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -19,11 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentSpendingBinding
-import com.example.customproject.model.Tag
-import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
-import com.example.customproject.ui.income.CustomAdapter
-import com.example.customproject.ui.spending.SpendingViewModel
+import com.example.customproject.ui.spending.CustomAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class SpendingFragment : Fragment() {
@@ -50,7 +46,7 @@ class SpendingFragment : Fragment() {
         var adapter: CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null, LinearLayoutManager.VERTICAL ,false)
 
-        spendingViewModel.GetallData().observe(viewLifecycleOwner, Observer<List<Transaction>>() {
+        spendingViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<String>>() {
             if (it.size>0) {
                 adapter = CustomAdapter(it)
                 recycleview.adapter = adapter
@@ -74,11 +70,17 @@ class SpendingFragment : Fragment() {
             descinput.setGravity( Gravity.CENTER)
             descinput.setLayoutParams(layoutParams);
 
+            val taginput = EditText(activity)
+            taginput.setHint("Tag")
+            taginput.setGravity( Gravity.CENTER)
+            taginput.setLayoutParams(layoutParams);
+
             val lp = LinearLayout(activity)
             lp.setOrientation( LinearLayout.VERTICAL )
 
             lp.addView( valueinput ,layoutParams);
             lp.addView( descinput,layoutParams );
+            lp.addView(taginput,layoutParams)
 
 
 
@@ -87,14 +89,12 @@ class SpendingFragment : Fragment() {
 
             builder.setMessage(" New Spending")
                 .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
-                        val tag = Tag("Food")
                         var result = transactionController.Create(
                             TransactionType.Spending,
                             valueinput.text.toString().toInt(),
                             descinput.text.toString(),
-                            tag
                         )
-                        transactionController.Add(result)
+                        transactionController.Add(result, TransactionType.Spending,taginput.text.toString())
                         val myToast =
                             Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT)
                         myToast.setGravity(Gravity.LEFT, 200, 200)
