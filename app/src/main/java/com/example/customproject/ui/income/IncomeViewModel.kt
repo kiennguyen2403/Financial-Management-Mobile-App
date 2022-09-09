@@ -13,17 +13,16 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 
 class IncomeViewModel : ViewModel() {
-   val transactionController= TransactionController()
    val tagController = TagController()
-   val taglist: MutableLiveData<List<String>> = MutableLiveData()
-   var transactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
+   val taglist: MutableLiveData<List<Tag>> = MutableLiveData()
 
-   fun getallTag():LiveData<List<String>>
+   fun getallTag():LiveData<List<Tag>>
    {
-      var list :MutableList<String> = mutableListOf()
+      var list :MutableList<Tag> = mutableListOf()
          tagController.getAll(TransactionType.Income).addOnSuccessListener { result ->
             result.documents.forEach {it ->
-               list.add(it.data?.get("desc") as String)
+               val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Income)
+               list.add(newtag)
                taglist.value=list
             }
       }

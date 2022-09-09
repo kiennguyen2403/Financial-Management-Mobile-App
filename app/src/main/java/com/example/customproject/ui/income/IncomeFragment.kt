@@ -16,8 +16,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customproject.R
 import com.example.customproject.controller.NotificationController
 import com.example.customproject.controller.TagController
 import com.example.customproject.controller.TransactionController
@@ -34,7 +36,6 @@ class IncomeFragment : Fragment() {
 
     private var _binding: FragmentIncomeBinding? = null
     private val transactionController: TransactionController = TransactionController()
-    private val tagController:TagController = TagController()
     private val notificationController: NotificationController = NotificationController()
 
     // This property is only valid between onCreateView and
@@ -55,9 +56,12 @@ class IncomeFragment : Fragment() {
         var adapter:CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null,LinearLayoutManager.VERTICAL ,false)
 
-        incomeViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<String>>() {
+        incomeViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<Tag>>() {
            if (it.size>0) {
                adapter = CustomAdapter(it)
+               adapter.onItemClick = {
+                   Navigation.findNavController(root).navigate(R.id.action_navigation_income_to_navigation_transactionlist)
+               }
                recycleview.adapter = adapter
            }else{
 

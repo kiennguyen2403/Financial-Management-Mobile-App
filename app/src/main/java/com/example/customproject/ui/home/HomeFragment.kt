@@ -14,6 +14,7 @@ import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentHomeBinding
 import com.example.customproject.model.Transaction
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
@@ -29,6 +30,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private lateinit var spendingpieChart:PieChart
     private lateinit var incomepieChart: PieChart
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -69,7 +71,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        /*
+
         incomepieChart= binding.incomepiechart
         setupPieChart(incomepieChart);
         homeViewModel.getallIncomeData().observe(viewLifecycleOwner) {
@@ -85,7 +87,7 @@ class HomeFragment : Fragment() {
                 loadPieChartData(list,incomepieChart)
             }
         }
-        */
+
 
         return root
     }
@@ -115,7 +117,7 @@ class HomeFragment : Fragment() {
         data.setValueFormatter(PercentFormatter(pieChart))
         data.setValueTextSize(12f)
         data.setValueTextColor(Color.BLACK)
-        spendingpieChart.data = data
+        pieChart.data = data
         pieChart.invalidate()
         pieChart.animateY(1400, Easing.EaseInOutQuad)
     }

@@ -10,14 +10,16 @@ import com.example.customproject.model.Notification
 import java.sql.Timestamp
 
 class CustomAdapter(private val mList: List<Notification>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
-
+    var onItemClick: (()->Unit)? = null
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_view_design_tag, parent, false)
+            .inflate(R.layout.card_view_design_notification, parent, false)
+        view.setOnClickListener{
 
+        }
         return ViewHolder(view)
     }
 
@@ -28,9 +30,9 @@ class CustomAdapter(private val mList: List<Notification>) : RecyclerView.Adapte
 
         // sets the image to the imageview from our itemHolder class
         // sets the text to the textview from our itemHolder class
-        Log.d("200",notification.date.toString())
+        Log.d("202", notification.date.toString())
         holder.desc.text = notification.desc
-       // holder.date.text = "Sep 4, 2022"
+        holder.date.text = notification.date.toDate().toString()
     }
 
     // return the number of the items in the list
@@ -41,6 +43,6 @@ class CustomAdapter(private val mList: List<Notification>) : RecyclerView.Adapte
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val desc: TextView = itemView.findViewById(R.id.desc)
-        // val date:TextView = itemView.findViewById(R.id.date)
+        val date: TextView = itemView.findViewById(R.id.date)
     }
 }

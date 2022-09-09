@@ -1,6 +1,7 @@
 package com.example.customproject.controller
 
 import android.util.Log
+import com.example.customproject.model.Tag
 import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
 import com.google.android.gms.tasks.Task
@@ -13,19 +14,19 @@ import com.google.firebase.ktx.Firebase
 
 class TagController {
     val dbinstance= Firebase.firestore
-    fun Create(_type: TransactionType, _value:Number, _desc:String): Transaction
+    fun Create(_name:String,_color:String,_type: TransactionType,): Tag
     {
-        val transaction = Transaction(_value, _desc, Timestamp.now())
-        return transaction;
+        val tag = Tag(_name, _color, _type)
+        return tag
     }
 
-    fun Add(transaction: Transaction, transactionType: TransactionType, tag:String){
+    fun Add(tag: Tag){
         val immutableMap = hashMapOf(
-            "value" to transaction.value,
-            "desc" to transaction.desc,
-            "date" to Timestamp.now()
+            "color" to tag.color,
+            "desc" to tag.name,
+            "type" to tag.type.toString()
         )
-        dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag).add(immutableMap)
+        dbinstance.collection("Tag").add(immutableMap)
             .addOnSuccessListener { result ->
                 Log.d("200", "DocumentSnapshot added with ID: ${result}")
             }
@@ -36,9 +37,9 @@ class TagController {
     }
 
 
-    fun Update(transaction: Transaction, transactionType: TransactionType, tag: String, data:HashMap<String,Any>)
+    fun Update(tag:Tag, data:HashMap<String,Any>)
     {
-        dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag)
+        dbinstance.collection("Tag")
             .document()
             .update(data)
             .addOnSuccessListener { Log.d("200", "DocumentSnapshot successfully updated!") }
@@ -47,7 +48,7 @@ class TagController {
 
     fun Delete(transaction: Transaction, transactionType: TransactionType, tag: String)
     {
-        dbinstance.collection("Tag").document(transactionType.toString()).collection(tag)
+        dbinstance.collection("Tag")
             .document()
             .delete()
             .addOnSuccessListener { Log.d("200", "DocumentSnapshot successfully deleted!") }

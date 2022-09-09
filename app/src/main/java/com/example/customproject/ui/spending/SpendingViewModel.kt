@@ -15,46 +15,21 @@ class SpendingViewModel : ViewModel() {
     val transactionController= TransactionController()
     val transaction: MutableLiveData<Transaction> = MutableLiveData()
     val tagController = TagController()
-    var taglist:MutableLiveData<List<String>> = MutableLiveData()
-    var transactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
+    var taglist:MutableLiveData<List<Tag>> = MutableLiveData()
 
 
-    fun getallTag():LiveData<List<String>>
+
+    fun getallTag():LiveData<List<Tag>>
     {
-        var list :MutableList<String> = mutableListOf()
+        var list :MutableList<Tag> = mutableListOf()
         tagController.getAll(TransactionType.Spending).addOnSuccessListener { result ->
             result.documents.forEach {it ->
-                list.add(it.data?.get("desc") as String)
+                val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Spending)
+                list.add(newtag)
                 taglist.value=list
             }
         }
 
         return taglist
     }
-
-
-    fun getallTransaction():LiveData<List<Transaction>>
-    {
-        var list:MutableList<String> = mutableListOf()
-        var translist: MutableList<Transaction> = mutableListOf()
-        transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
-            list = it.data?.get("tag") as MutableList<String>
-            list.forEach { it ->
-                transactionController.getSpecific(TransactionType.Spending,it).addOnSuccessListener {
-                    it.documents.forEach {
-                        it.reference.addSnapshotListener{ value,error ->
-                            if (value != null)
-                            {
-                                var newtransaction = transactionController.Create(TransactionType.Spending,value.data?.get("value") as Int,value.data?.get("desc") as String )
-                                translist.add(newtransaction)
-                                transactionlist.value = translist
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return transactionlist
-    }
-
 }

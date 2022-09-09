@@ -19,6 +19,7 @@ class HomeViewModel : ViewModel() {
     var spendingtransactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
 
 
+
     fun getTotal():LiveData<Int>{
         total.value=0
         var list :MutableList<String> = mutableListOf()
@@ -85,7 +86,6 @@ class HomeViewModel : ViewModel() {
                                     )
                                     translist.add(newtransaction)
                                     incometransactionlist.value = translist
-                                    Log.d("200", translist.toString())
                                 }
                             }
                         }

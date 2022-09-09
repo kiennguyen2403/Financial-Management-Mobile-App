@@ -2,6 +2,7 @@ package com.example.customproject.ui.login
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.navigation.Navigation
 import com.example.customproject.MainActivity
 import com.example.customproject.databinding.ActivityLoginBinding
 
@@ -43,6 +45,15 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
+        val signup = binding.signup
+        if (signup != null) {
+            signup.setTextColor(R.color.purple_500)
+        }
+        if (signup != null) {
+            signup.setOnClickListener{
+                //Navigation.navigate()
+            }
+        }
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)

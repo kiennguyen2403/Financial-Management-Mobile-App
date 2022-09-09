@@ -14,10 +14,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customproject.R
 import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentSpendingBinding
+import com.example.customproject.model.Tag
 import com.example.customproject.model.TransactionType
 import com.example.customproject.ui.spending.CustomAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -46,9 +49,13 @@ class SpendingFragment : Fragment() {
         var adapter: CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null, LinearLayoutManager.VERTICAL ,false)
 
-        spendingViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<String>>() {
+
+        spendingViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<Tag>>() {
             if (it.size>0) {
                 adapter = CustomAdapter(it)
+                adapter.onItemClick = {
+                    Navigation.findNavController(root).navigate(R.id.action_navigation_spending_to_navigation_transactionlist)
+                }
                 recycleview.adapter = adapter
             }
         })

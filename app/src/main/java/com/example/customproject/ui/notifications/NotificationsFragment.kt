@@ -37,6 +37,7 @@ class NotificationsFragment : Fragment() {
         var adapter: CustomAdapter
         recyclerView.layoutManager= LinearLayoutManager(null, LinearLayoutManager.VERTICAL ,false)
         notificationsViewModel.getallNotification().observe(viewLifecycleOwner,Observer<List<Notification>>(){
+            Log.d("200",it[0].date.toString())
             if (it.size>0){
                 adapter = CustomAdapter(it)
                 recyclerView.adapter = adapter

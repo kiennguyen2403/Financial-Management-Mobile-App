@@ -15,16 +15,40 @@
         android:id="@+id/navigation_spending"
         android:name="com.example.customproject.ui.spending.SpendingFragment"
         android:label="@string/title_spending"
-        tools:layout="@layout/fragment_income" />
+        tools:layout="@layout/fragment_income" >
+        <argument
+            android:name="tagname"
+            app:argType="string"
+            android:defaultValue="Eating" />
+        <action
+            android:id="@+id/action_navigation_spending_to_navigation_transactionlist"
+            app:destination="@id/navigation_transactionlist" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_income"
         android:name="com.example.customproject.ui.income.IncomeFragment"
         android:label="@string/title_income"
-        tools:layout="@layout/fragment_income" />
+        tools:layout="@layout/fragment_income" >
+        <argument
+            android:name="tagname"
+            app:argType="string"
+            android:defaultValue="Work" />
+        <action
+            android:id="@+id/action_navigation_income_to_navigation_transactionlist"
+            app:destination="@id/navigation_transactionlist"
+            app:launchSingleTop="false"
+            app:popUpToInclusive="false" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.customproject.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/navigation_transactionlist"
+        android:name="com.example.customproject.ui.transactionlist.TransactionsListFragmant"
+        android:label="@string/title_transactionslist"
+        tools:layout="@layout/fragment_transactions_list" />
+
 </navigation>
