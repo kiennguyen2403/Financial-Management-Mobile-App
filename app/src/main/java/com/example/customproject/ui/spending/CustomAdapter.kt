@@ -14,7 +14,7 @@ import kotlinx.coroutines.NonDisposableHandle.parent
 
 class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
-    var onItemClick: (()->Unit)? = null
+    var onItemClick: ((String)->Unit)? = null
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -33,7 +33,7 @@ class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomA
         holder.desc.text = tag.name
         holder.label.setColorFilter(Color.parseColor(tag.color))
         holder.itemView.setOnClickListener{
-            onItemClick?.invoke()
+            onItemClick?.invoke(tag.name)
         }
     }
 

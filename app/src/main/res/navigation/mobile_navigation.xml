@@ -16,28 +16,42 @@
         android:name="com.example.customproject.ui.spending.SpendingFragment"
         android:label="@string/title_spending"
         tools:layout="@layout/fragment_income" >
-        <argument
-            android:name="tagname"
-            app:argType="string"
-            android:defaultValue="Eating" />
         <action
             android:id="@+id/action_navigation_spending_to_navigation_transactionlist"
-            app:destination="@id/navigation_transactionlist" />
+            app:destination="@id/navigation_transactionlist">
+            <argument
+                android:name="transType"
+                android:defaultValue="No value"
+                app:argType="string"
+                app:nullable="false" />
+            <argument
+                android:name="labelName"
+                android:defaultValue="No value"
+                app:argType="string"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/navigation_income"
         android:name="com.example.customproject.ui.income.IncomeFragment"
         android:label="@string/title_income"
         tools:layout="@layout/fragment_income" >
-        <argument
-            android:name="tagname"
-            app:argType="string"
-            android:defaultValue="Work" />
         <action
             android:id="@+id/action_navigation_income_to_navigation_transactionlist"
             app:destination="@id/navigation_transactionlist"
             app:launchSingleTop="false"
-            app:popUpToInclusive="false" />
+            app:popUpToInclusive="false">
+            <argument
+                android:name="transType"
+                android:defaultValue="No value"
+                app:argType="string"
+                app:nullable="false" />
+            <argument
+                android:name="labelName"
+                android:defaultValue="No value"
+                app:argType="string"
+                app:nullable="false" />
+        </action>
     </fragment>
 
     <fragment
@@ -49,6 +63,17 @@
         android:id="@+id/navigation_transactionlist"
         android:name="com.example.customproject.ui.transactionlist.TransactionsListFragmant"
         android:label="@string/title_transactionslist"
-        tools:layout="@layout/fragment_transactions_list" />
+        tools:layout="@layout/fragment_transactions_list" >
+        <argument
+            android:name="transType"
+            app:argType="string"
+            app:nullable="false"
+            android:defaultValue="String" />
+        <argument
+            android:name="labelName"
+            app:argType="string"
+            app:nullable="false"
+            android:defaultValue="String" />
+    </fragment>
 
 </navigation>

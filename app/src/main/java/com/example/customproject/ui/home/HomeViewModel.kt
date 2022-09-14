@@ -15,8 +15,8 @@ import java.util.*
 class HomeViewModel : ViewModel() {
     val transactionController=TransactionController()
     var total: MutableLiveData<Int> = MutableLiveData(0)
-    var incometransactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
-    var spendingtransactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
+    var totalincometransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
+    var totalspendingtransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
 
 
 
@@ -60,6 +60,7 @@ class HomeViewModel : ViewModel() {
                             }
                         }
                     }
+
                 }
             }
         }.addOnFailureListener {
@@ -67,48 +68,27 @@ class HomeViewModel : ViewModel() {
         }
         return total
     }
-    fun getallIncomeData():LiveData<List<Transaction>>{
+    fun getallIncomeData():LiveData<List<Map<String,Long>>>{
         var list:MutableList<String> = mutableListOf()
-        var translist: MutableList<Transaction> = mutableListOf()
+        var translist: MutableList<Map<String,Long>> = mutableListOf()
         transactionController.getAll(TransactionType.Income).addOnSuccessListener {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { item ->
+                var total:Long = 0
                 transactionController.getSpecific(TransactionType.Income,item).addOnSuccessListener {
+
                     it.documents.forEach {
                         it.reference.addSnapshotListener{ value,error ->
                             if (value != null)
                             {
                                 if(value.data?.get("value") != null) {
-                                    var newtransaction = transactionController.Create(
-                                        TransactionType.Income,
-                                        value.data?.get("value") as Long,
-                                        value.data?.get("desc") as String
-                                    )
-                                    translist.add(newtransaction)
-                                    incometransactionlist.value = translist
+                                        total = total.plus(value.data?.get("value") as Long)
+                                        var newlist = hashMapOf<String,Long>(
+                                            item to total
+                                        )
+                                         translist.add(newlist)
+                                        totalincometransactionlist.value=translist
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return incometransactionlist
-    }
-    fun getallSpendingData():LiveData<List<Transaction>>{
-        var list:MutableList<String> = mutableListOf()
-        var translist: MutableList<Transaction> = mutableListOf()
-        transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
-            list = it.data?.get("tag") as MutableList<String>
-            list.forEach { item ->
-                transactionController.getSpecific(TransactionType.Spending,item).addOnSuccessListener {
-                    it.documents.forEach {
-                        it.reference.addSnapshotListener{ value,error ->
-                            if (value != null)
-                            {
-                                var newtransaction = transactionController.Create(TransactionType.Spending,value.data?.get("value") as Long,value.data?.get("desc") as String )
-                                translist.add(newtransaction)
-                                spendingtransactionlist.value = translist
 
                             }
                         }
@@ -116,7 +96,36 @@ class HomeViewModel : ViewModel() {
                 }
             }
         }
-        return spendingtransactionlist
+        return totalincometransactionlist
+    }
+
+    fun getallSpendingData():LiveData<List<Map<String,Long>>>{
+        var list:MutableList<String> = mutableListOf()
+        var translist: MutableList<Map<String,Long>> = mutableListOf()
+        transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
+            list = it.data?.get("tag") as MutableList<String>
+            list.forEach { item ->
+                var total:Long = 0
+                transactionController.getSpecific(TransactionType.Spending,item).addOnSuccessListener {
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{ value,error ->
+                            if (value != null)
+                            {
+                                if(value.data?.get("value") != null) {
+                                    total = total.plus(value.data?.get("value") as Long)
+                                    var newlist = hashMapOf<String,Long>(
+                                        item to total
+                                    )
+                                    translist.add(newlist)
+                                    totalspendingtransactionlist.value=translist
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return totalspendingtransactionlist
     }
 
 }

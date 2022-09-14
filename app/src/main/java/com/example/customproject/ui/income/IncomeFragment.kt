@@ -60,7 +60,8 @@ class IncomeFragment : Fragment() {
            if (it.size>0) {
                adapter = CustomAdapter(it)
                adapter.onItemClick = {
-                   Navigation.findNavController(root).navigate(R.id.action_navigation_income_to_navigation_transactionlist)
+                   val action = IncomeFragmentDirections.actionNavigationIncomeToNavigationTransactionlist("Income",it)
+                   Navigation.findNavController(root).navigate(action)
                }
                recycleview.adapter = adapter
            }else{

@@ -11,16 +11,13 @@ import com.example.customproject.R
 import com.example.customproject.model.Tag
 
 class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
-    var onItemClick: (()->Unit)? = null
+    var onItemClick: ((String)->Unit)? = null
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.card_view_design_tag, parent, false)
-        view.setOnClickListener{
-            onItemClick?.invoke()
-        }
 
         return ViewHolder(view)
     }
@@ -32,6 +29,10 @@ class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomA
         // sets the text to the textview from our itemHolder class
         holder.desc.text = tag.name
         holder.label.setColorFilter(Color.parseColor(tag.color))
+        holder.itemView.setOnClickListener{
+            onItemClick?.invoke(tag.name)
+        }
+
     }
 
     // return the number of the items in the list
@@ -43,5 +44,6 @@ class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomA
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val desc: TextView = itemView.findViewById(R.id.desc)
         val label: ImageView = itemView.findViewById(R.id.material_label)
+
     }
 }

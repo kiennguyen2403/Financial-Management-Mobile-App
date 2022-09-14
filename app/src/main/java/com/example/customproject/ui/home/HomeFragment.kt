@@ -57,17 +57,9 @@ class HomeFragment : Fragment() {
 
         spendingpieChart= binding.spendingpiechart
         setupPieChart(spendingpieChart);
-        homeViewModel.getallSpendingData().observe(viewLifecycleOwner) { it ->
+        homeViewModel.getallSpendingData().observe(viewLifecycleOwner) {
             if (it.size>0) {
                 loadPieChartData(it,spendingpieChart)
-            }
-            else {
-                var list : MutableList<Transaction> = mutableListOf()
-                val transaction = Transaction(
-                    0,"No transactions found", Timestamp.now()
-                )
-                list.add(transaction)
-                loadPieChartData(list,spendingpieChart)
             }
         }
 
@@ -78,14 +70,7 @@ class HomeFragment : Fragment() {
             if (it.size>0) {
                 loadPieChartData(it,incomepieChart)
             }
-            else {
-                var list : MutableList<Transaction> = mutableListOf()
-                val transaction = Transaction(
-                    0,"No transactions found", Timestamp.now()
-                )
-                list.add(transaction)
-                loadPieChartData(list,incomepieChart)
-            }
+
         }
 
 
@@ -98,11 +83,13 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun loadPieChartData(transactionlist: List<Transaction>,pieChart: PieChart) {
+    private fun loadPieChartData(transactionlist: List<Map<String,Long>>,pieChart: PieChart) {
         val entries: ArrayList<PieEntry> = ArrayList()
+
         transactionlist.forEach { item->
-            entries.add(PieEntry(item.value.toFloat(), item.desc))
+            entries.add(PieEntry(item[item.keys.first()].toString().toFloat(), item.keys.first()))
         }
+
         val colors: ArrayList<Int> = ArrayList()
         for (color in ColorTemplate.MATERIAL_COLORS) {
             colors.add(color)
@@ -126,7 +113,7 @@ class HomeFragment : Fragment() {
         pieChart.setUsePercentValues(true)
         pieChart.setEntryLabelTextSize(12f)
         pieChart.setEntryLabelColor(Color.BLACK)
-        pieChart.centerText = "Spending by Category"
+        pieChart.centerText = "Transaction types by Category"
         pieChart.setCenterTextSize(20f)
         pieChart.description.isEnabled = false
         val l = pieChart.legend
