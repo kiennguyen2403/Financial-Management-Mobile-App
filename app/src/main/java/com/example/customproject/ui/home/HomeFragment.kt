@@ -47,16 +47,25 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
+        val textView: TextView = binding.total
+        val totalincome:TextView = binding.totalincome
+        val totalspending:TextView = binding.totalspending
         homeViewModel.getTotal().observe(viewLifecycleOwner) {
             if (it != null) {
                 textView.text = "Total: " + it.toString() + "$"
             }
         }
 
+        homeViewModel.totalspending.observe(viewLifecycleOwner){
+            totalspending.text = "Total spending: " + it.toString()+"$"
+        }
+        homeViewModel.totalincome.observe(viewLifecycleOwner){
+            totalincome.text =   "Total income: "+it.toString()+"$"
+        }
+
 
         spendingpieChart= binding.spendingpiechart
-        setupPieChart(spendingpieChart);
+        setupPieChart(spendingpieChart)
         homeViewModel.getallSpendingData().observe(viewLifecycleOwner) {
             if (it.size>0) {
                 loadPieChartData(it,spendingpieChart)
@@ -65,7 +74,7 @@ class HomeFragment : Fragment() {
 
 
         incomepieChart= binding.incomepiechart
-        setupPieChart(incomepieChart);
+        setupPieChart(incomepieChart)
         homeViewModel.getallIncomeData().observe(viewLifecycleOwner) {
             if (it.size>0) {
                 loadPieChartData(it,incomepieChart)

@@ -9,7 +9,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class NotificationController {
-    val dbinstance = Firebase.firestore
+    private val dbinstance = Firebase.firestore
+
 
     fun Create(_desc:String):Notification{
         val notification = Notification(_desc)
@@ -22,8 +23,7 @@ class NotificationController {
             "date" to Timestamp.now(),
             "desc" to _desc
         )
-
-        dbinstance.collection("Notfication").add(immutableMap).addOnSuccessListener {
+        dbinstance.collection("Notification").add(immutableMap).addOnSuccessListener {
             Log.d("200","DocumentSnapshot added with ID:${it}")
         }.addOnFailureListener {
             Log.d("404","Error adding document",it)

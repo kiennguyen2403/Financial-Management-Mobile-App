@@ -13,8 +13,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class TagController {
-    val dbinstance= Firebase.firestore
-    fun Create(_name:String,_color:String,_type: TransactionType,): Tag
+    private val dbinstance= Firebase.firestore
+    fun Create(_name: String, _color: String, _type: TransactionType): Tag
     {
         val tag = Tag(_name, _color, _type)
         return tag

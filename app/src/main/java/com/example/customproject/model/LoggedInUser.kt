@@ -1,4 +1,4 @@
-package com.example.customproject.data.model
+package com.example.customproject.model
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository

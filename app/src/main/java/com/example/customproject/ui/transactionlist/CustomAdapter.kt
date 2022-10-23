@@ -8,16 +8,13 @@ import com.example.customproject.R
 import com.example.customproject.model.Transaction
 import java.util.*
 
-class CustomAdapter(private val mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     // create new views
 
     var Translist:List<Transaction> = mList
-    set(value:List<Transaction>) {
-        field = value
-    }
     fun filterList(text:String){
-        var newlist:MutableList<Transaction>  = mutableListOf()
+        val newlist:MutableList<Transaction>  = mutableListOf()
         Translist.forEach {
             if (it.desc.lowercase(Locale.getDefault()).contains(text.lowercase()))
             {

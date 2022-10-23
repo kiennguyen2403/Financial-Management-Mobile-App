@@ -10,7 +10,11 @@
         android:name="com.example.customproject.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
-
+    <fragment
+            android:id="@+id/navigation_account"
+            android:name="com.example.customproject.ui.account.AccountFragment"
+            android:label="@string/title_account"
+            tools:layout="@layout/fragment_account" />
     <fragment
         android:id="@+id/navigation_spending"
         android:name="com.example.customproject.ui.spending.SpendingFragment"

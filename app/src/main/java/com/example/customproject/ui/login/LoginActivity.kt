@@ -1,8 +1,8 @@
 package com.example.customproject.ui.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -16,13 +16,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.navigation.Navigation
 import com.example.customproject.MainActivity
 import com.example.customproject.databinding.ActivityLoginBinding
-
 import com.example.customproject.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -32,11 +29,13 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
 
         auth = Firebase.auth
@@ -107,11 +106,6 @@ class LoginActivity : AppCompatActivity() {
 
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE -> {
-                        /*
-                        loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString(),
-                        )*/
                         loading.visibility = View.VISIBLE
                         signIn(username.text.toString(), password.text.toString(),loading)
                     }
@@ -130,13 +124,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if(currentUser != null){
-            reload();
-        }
-    }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
@@ -149,24 +136,14 @@ class LoginActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun updateUI(user: FirebaseUser?){
-
-    }
-    private fun reload() {
-
-    }
-
-    public fun createAccount(email:String,password:String){
+    fun createAccount(email:String,password:String){
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("200", "createUserWithEmail:success")
                     val user = auth.currentUser
-                    //  updateUI(user)
-
-                } else {
-                    // If sign in fails, display a message to the user.
+403                    // If sign in fails, display a message to the user.
                     Log.w("404", "createUserWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()

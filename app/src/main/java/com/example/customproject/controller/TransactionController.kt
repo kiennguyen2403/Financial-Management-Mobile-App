@@ -16,11 +16,11 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class TransactionController {
-    val dbinstance= Firebase.firestore
+    private val dbinstance= Firebase.firestore
     fun Create(_type: TransactionType, _value:Number, _desc:String): Transaction
     {
         val transaction = Transaction(_value, _desc, Timestamp.now())
-        return transaction;
+        return transaction
     }
 
     fun Add(transaction: Transaction,transactionType: TransactionType,tag:String){

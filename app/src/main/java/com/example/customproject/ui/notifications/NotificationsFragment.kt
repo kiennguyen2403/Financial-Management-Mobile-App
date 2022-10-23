@@ -34,15 +34,18 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val recyclerView = binding.recyclerview
+        val notification= binding.notification
+        notification.text="No transaction has been recorded"
         var adapter: CustomAdapter
         recyclerView.layoutManager= LinearLayoutManager(null, LinearLayoutManager.VERTICAL ,false)
-        notificationsViewModel.getallNotification().observe(viewLifecycleOwner,Observer<List<Notification>>(){
-            Log.d("200",it[0].date.toString())
+        notificationsViewModel.getallNotification().observe(viewLifecycleOwner,Observer<List<Notification>> {
             if (it.size>0){
+                notification.visibility=View.INVISIBLE
                 adapter = CustomAdapter(it)
                 recyclerView.adapter = adapter
             }
         })
+
         return root
     }
 

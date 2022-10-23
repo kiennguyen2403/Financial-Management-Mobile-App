@@ -53,11 +53,14 @@ class IncomeFragment : Fragment() {
         val root: View = binding.root
 
         val recycleview:RecyclerView= binding.recyclerview
+        val notification= binding.notification
+        notification.text="No group has been created"
         var adapter:CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null,LinearLayoutManager.VERTICAL ,false)
 
-        incomeViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<Tag>>() {
-           if (it.size>0) {
+        incomeViewModel.getallTag().observe(viewLifecycleOwner, Observer<List<Tag>> { it ->
+            if (it.isNotEmpty()) {
+               notification.visibility=View.INVISIBLE
                adapter = CustomAdapter(it)
                adapter.onItemClick = {
                    val action = IncomeFragmentDirections.actionNavigationIncomeToNavigationTransactionlist("Income",it)
@@ -69,70 +72,8 @@ class IncomeFragment : Fragment() {
            }
         })
 
-        val button: FloatingActionButton =binding.fab
-        button.setOnClickListener{
-
-            val layoutParams = LinearLayout.LayoutParams(  LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            layoutParams.setMargins( 60,20,60,20);
-
-            val valueinput = EditText(activity)
-            valueinput.setHint("Value")
-            valueinput.setGravity( Gravity.CENTER)
-            valueinput.setLayoutParams(layoutParams);
-            valueinput.inputType = InputType.TYPE_CLASS_NUMBER
-
-
-            val descinput = EditText(activity)
-            descinput.setHint("Description")
-            descinput.setGravity( Gravity.CENTER)
-            descinput.setLayoutParams(layoutParams);
-
-            val taginput = EditText(activity)
-            taginput.setHint("Tag")
-            taginput.setGravity( Gravity.CENTER)
-            taginput.setLayoutParams(layoutParams);
-            taginput.setOnClickListener {
-
-            }
-
-            val lp = LinearLayout(activity)
-            lp.setOrientation( LinearLayout.VERTICAL )
-
-            lp.addView( valueinput ,layoutParams);
-            lp.addView( descinput,layoutParams );
-            lp.addView(taginput,layoutParams)
-
-
-
-            val builder = AlertDialog.Builder(activity)
-
-
-            builder.setMessage(" New Income")
-                .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
-                    var result = transactionController.Create(TransactionType.Income,valueinput.text.toString().toInt(),descinput.text.toString())
-                    notificationController.Add("You have earn " + valueinput.text+" for "+ descinput.toString() )
-                    transactionController.Add(result,TransactionType.Income,taginput.text.toString())
-                    val myToast = Toast.makeText(activity,"Add Successfully",Toast.LENGTH_SHORT)
-                    myToast.setGravity(Gravity.LEFT,200,200)
-                    myToast.show()
-                }) .setNegativeButton("Cancel",DialogInterface.OnClickListener{ dialog,id ->
-
-
-                })
-                .setView(lp)
-            val alertdialog = builder.create()
-            alertdialog.show()
-        }
-
         return root
     }
-
-    override fun onResume(){
-        super.onResume()
-
-
-    }
-
 
 
     override fun onDestroyView() {

@@ -30,7 +30,6 @@ class CustomAdapter(private val mList: List<Notification>) : RecyclerView.Adapte
 
         // sets the image to the imageview from our itemHolder class
         // sets the text to the textview from our itemHolder class
-        Log.d("202", notification.date.toString())
         holder.desc.text = notification.desc
         holder.date.text = notification.date.toDate().toString()
     }

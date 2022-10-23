@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.income.IncomeFragment">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <ImageView
+                    android:src="@drawable/ic_baseline_account_circle_24"
+                    android:layout_width="64dp"
+                    android:layout_height="66dp"
+                    android:id="@+id/imageView"
+                    android:contentDescription="account_icon"
+            />
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="270dp"
+                    android:layout_height="69dp">
+                <TextView
+                        android:text="Welcome"
+                        android:textSize="17sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView4"/>
+                <TextView
+                        android:text="TextView"
+                        android:textSize="27sp"
+                        android:textStyle="bold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/Name"
+                />
+            </LinearLayout>
+            <ImageButton
+                    android:src="@drawable/ic_baseline_exit_to_app_24"
+                    android:layout_width="88dp"
+                    android:layout_height="67dp"
+                    android:id="@+id/imageButton"
+                    android:scaleY="1.5"
+                    android:scaleX="1.5"
+                    android:layout_weight="1"
+                    android:background="@color/white" android:contentDescription="@string/action_sign_in"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:layout_marginStart="6dp">
+            <TextView
+                    android:text="Bank account information"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+            />
+            <TextView
+                    android:text="Account number"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/Account"
+            />
+            <TextView
+                    android:text="BSB"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bsb"
+            />
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:layout_marginStart="6dp">
+            <TextView
+                    android:text="Users information"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+            />
+            <TextView
+                    android:text="Email"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/email"
+            />
+            <TextView
+                    android:text="Date of birth"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dob"
+            />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

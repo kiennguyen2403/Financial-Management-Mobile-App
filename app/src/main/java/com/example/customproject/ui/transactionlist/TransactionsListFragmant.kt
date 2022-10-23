@@ -123,10 +123,4 @@ class TransactionsListFragmant : Fragment() {
         // TODO: Use the ViewModel
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-
-        super.onCreateOptionsMenu(menu, inflater)
-
-    }
-
 }

@@ -1,6 +1,6 @@
 package com.example.customproject.data
 
-import com.example.customproject.data.model.LoggedInUser
+import com.example.customproject.model.LoggedInUser
 
 /**
  * Class that requests authentication and user information from the remote data source and

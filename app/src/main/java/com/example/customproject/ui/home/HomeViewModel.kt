@@ -15,6 +15,8 @@ import java.util.*
 class HomeViewModel : ViewModel() {
     val transactionController=TransactionController()
     var total: MutableLiveData<Int> = MutableLiveData(0)
+    var totalincome:MutableLiveData<Int> = MutableLiveData(0)
+    var totalspending:MutableLiveData<Int> = MutableLiveData(0)
     var totalincometransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
     var totalspendingtransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
 
@@ -22,18 +24,21 @@ class HomeViewModel : ViewModel() {
 
     fun getTotal():LiveData<Int>{
         total.value=0
+        totalincome.value=0
+        totalspending.value=0
         var list :MutableList<String> = mutableListOf()
-        transactionController.getAll(TransactionType.Income).addOnSuccessListener {
+        transactionController.getAll(TransactionType.Income).addOnSuccessListener { it ->
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { it ->
-                transactionController.getSpecific(TransactionType.Income,it).addOnSuccessListener{
-                    it.documents.forEach {
-                        it.reference.addSnapshotListener{value,error->
+                transactionController.getSpecific(TransactionType.Income,it).addOnSuccessListener{it->
+                    it.documents.forEach { it->
+                        it.reference.addSnapshotListener{ value, _ ->
                             if (value != null)
                             {
                                 if (value.data?.get("value") != null)
                                 {
                                     total.value = total.value?.plus(value.data?.get("value").toString().toInt())
+                                    totalincome.value = totalincome.value?.plus(value.data?.get("value").toString().toInt())
                                 }
                             }
                         }
@@ -47,15 +52,14 @@ class HomeViewModel : ViewModel() {
         transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { it ->
-                transactionController.getSpecific(TransactionType.Spending,it).addOnSuccessListener{
-                    it.documents.forEach {
+                transactionController.getSpecific(TransactionType.Spending,it).addOnSuccessListener{it ->
+                    it.documents.forEach {it->
                         it.reference.addSnapshotListener{value,error->
                             if (value != null)
                             {
                                 if (value.data?.get("value") != null) {
-                                    total.value = total.value?.minus(
-                                        value.data?.get("value").toString().toInt()
-                                    )
+                                    total.value = total.value?.minus(value.data?.get("value").toString().toInt())
+                                    totalspending.value = totalspending.value?.plus(value.data?.get("value").toString().toInt())
                                 }
                             }
                         }

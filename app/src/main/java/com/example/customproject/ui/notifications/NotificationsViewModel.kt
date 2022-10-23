@@ -8,12 +8,12 @@ import com.example.customproject.model.Notification
 
 class NotificationsViewModel : ViewModel() {
     private val notificationController = NotificationController()
-    public var notificationlist:MutableLiveData<List<Notification>> = MutableLiveData()
+    var notificationlist:MutableLiveData<List<Notification>> = MutableLiveData()
 
     fun getallNotification():LiveData<List<Notification>>
     {
         var list: MutableList<Notification> = mutableListOf()
-        notificationController.Get().addOnSuccessListener {
+        notificationController.Get().addOnSuccessListener { it ->
             it.documents.forEach {
                     val notification = notificationController.Create(it.data?.get("desc").toString())
                     list.add(notification)
