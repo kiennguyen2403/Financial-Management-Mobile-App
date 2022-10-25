@@ -1,5 +1,6 @@
-package com.example.customproject.ui.transactionlist
+package com.example.customproject.ui.transaction_list
 
+import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context.SEARCH_SERVICE
 import androidx.lifecycle.ViewModelProvider
@@ -13,55 +14,56 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.customproject.databinding.FragmentTransactionsListBinding
 import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
-import java.io.Console
 
 class TransactionsListFragmant : Fragment() {
 
-    private lateinit var viewModel: TransactionsListViewModel
     private var _binding: FragmentTransactionsListBinding? = null
     private val binding get() = _binding!!
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentTransactionsListBinding.inflate(inflater, container, false)
-        val transactionsListViewModel =   ViewModelProvider(this).get(TransactionsListViewModel::class.java)
+        val transactionsListViewModel = ViewModelProvider(this)[TransactionsListViewModel::class.java]
         val recycleview: RecyclerView = binding.recyclerview
         var adapter: CustomAdapter
-        val bundle= arguments
+        val bundle = arguments
         if (bundle == null) {
             Log.e("404", "Fragment did not receive traveler information")
         }
         val args = bundle?.let { TransactionsListFragmantArgs.fromBundle(it) }
         val labelName = args?.labelName
-        val transType =args?.transType
+        val transType = args?.transType
 
-        var list:MutableList<Transaction> = mutableListOf()
-        recycleview.layoutManager = LinearLayoutManager(null, LinearLayoutManager.VERTICAL ,false)
+        val list: MutableList<Transaction> = mutableListOf()
+        recycleview.layoutManager = LinearLayoutManager(null, LinearLayoutManager.VERTICAL, false)
         if (transType == "Income") {
-            if (labelName != null) {
-                transactionsListViewModel.getallTransaction(TransactionType.Income,args.labelName.toString()).observe(viewLifecycleOwner
-                ) {
-                    if (it.size > 0) {
-                        adapter = CustomAdapter(it)
+            if (labelName != null)
+                transactionsListViewModel.getallTransaction(TransactionType.Income, args.labelName).observe(
+                    viewLifecycleOwner
+                ) { transactions ->
+                    if (transactions.isNotEmpty()) {
+                        adapter = CustomAdapter(transactions)
                         recycleview.adapter = adapter
                         list.clear()
-                        it.forEach {
+                        transactions.forEach {
                             list.add(it)
                         }
                     }
                 }
-            }
-        }
-        else{
+        } else {
             if (labelName != null) {
-                transactionsListViewModel.getallTransaction(TransactionType.Spending,
+                transactionsListViewModel.getallTransaction(
+                    TransactionType.Spending,
                     args.labelName
-                ).observe(viewLifecycleOwner
-                ) {
-                    if (it.size > 0) {
-                        adapter = CustomAdapter(it)
+                ).observe(
+                    viewLifecycleOwner
+                ) { transactions ->
+                    if (transactions.isNotEmpty()) {
+                        adapter = CustomAdapter(transactions)
                         recycleview.adapter = adapter
                         list.clear()
-                        it.forEach {
+                        transactions.forEach {
                             list.add(it)
                         }
                     }
@@ -71,13 +73,14 @@ class TransactionsListFragmant : Fragment() {
 
 
         if (labelName != null) {
-            transactionsListViewModel.getallTransaction(TransactionType.Income, args.labelName).observe(viewLifecycleOwner
-            ) {
-                if (it.size > 0) {
-                    adapter = CustomAdapter(it)
+            transactionsListViewModel.getallTransaction(TransactionType.Income, args.labelName).observe(
+                viewLifecycleOwner
+            ) { transactions ->
+                if (transactions.isNotEmpty()) {
+                    adapter = CustomAdapter(transactions)
                     recycleview.adapter = adapter
                     list.clear()
-                    it.forEach {
+                    transactions.forEach {
                         list.add(it)
                     }
                 }
@@ -86,24 +89,24 @@ class TransactionsListFragmant : Fragment() {
         adapter = CustomAdapter(list)
         recycleview.adapter = adapter
         val actionBar = activity?.actionBar
-            actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val search :SearchView = binding.search
+        val search: SearchView = binding.search
         val searchManager = context?.getSystemService(SEARCH_SERVICE) as SearchManager
         search.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
-        search.setOnQueryTextListener(object:SearchView.OnQueryTextListener{
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 return false
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
-                    if (newText.length== 0){
-                        adapter.Translist= transactionsListViewModel.transactionlist.value!!
+                    if (newText.isEmpty()) {
+                        adapter.Translist = transactionsListViewModel.transactionlist.value!!
                         adapter.notifyDataSetChanged()
-                    }
-                    else{
+                    } else {
                         adapter.filterList(newText)
                     }
                 }
@@ -111,16 +114,6 @@ class TransactionsListFragmant : Fragment() {
             }
 
         })
-
-
-        val root:View =binding.root
-        return root
+        return binding.root
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(TransactionsListViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }

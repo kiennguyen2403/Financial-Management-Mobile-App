@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+        xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
-
+            android:id="@+id/navigation_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/title_home" />
     <item
-        android:id="@+id/navigation_spending"
-        android:icon="@drawable/ic_spendingdark"
-        android:title="@string/title_spending" />
+            android:id="@+id/navigation_transaction_type"
+            android:icon="@drawable/ic_spendingdark"
+            android:title="@string/title_spending" />
     <item
-        android:id="@+id/navigation_income"
-        android:icon="@drawable/ic_incomedark"
-        android:title="@string/title_income" />
-
+            android:id="@+id/navigation_calendar"
+            android:icon="@drawable/ic_baseline_calendar_month_24"
+            android:title="@string/title_calendar" />
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_notifications" />
+            android:id="@+id/navigation_notifications"
+            android:icon="@drawable/ic_notifications_black_24dp"
+            android:title="@string/title_notifications" />
     <item
             android:id="@+id/navigation_account"
             android:icon="@drawable/ic_baseline_account_circle_24"

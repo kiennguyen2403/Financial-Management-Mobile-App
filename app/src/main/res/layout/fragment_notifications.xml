@@ -7,6 +7,13 @@
     tools:context=".ui.notifications.NotificationsFragment"
     android:layout_marginTop="20dp">
 
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar4" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
     <TextView
         android:id="@+id/notification"
         android:layout_width="353dp"
@@ -18,9 +25,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.521"/>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:itemCount="5"
-        tools:listitem="@layout/card_view_design_notification" />
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="5"
+            tools:listitem="@layout/card_view_design_notification" tools:layout_editor_absoluteY="-321dp"
+            tools:layout_editor_absoluteX="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

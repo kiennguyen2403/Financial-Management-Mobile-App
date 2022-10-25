@@ -1,4 +1,5 @@
-package com.example.customproject.ui.transactionlist
+package com.example.customproject.ui.transaction_list
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapt
     // create new views
 
     var Translist:List<Transaction> = mList
+    @SuppressLint("NotifyDataSetChanged")
     fun filterList(text:String){
         val newlist:MutableList<Transaction>  = mutableListOf()
         Translist.forEach {
@@ -29,14 +31,14 @@ class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapt
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.card_view_design_transaction, parent, false)
-       view.setOnClickListener{
+        view.setOnClickListener {
 
-       }
-        val viewHolder= ViewHolder(view)
-        return viewHolder
+        }
+        return ViewHolder(view)
     }
 
     // binds the list items to a view
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val transaction = Translist[position]

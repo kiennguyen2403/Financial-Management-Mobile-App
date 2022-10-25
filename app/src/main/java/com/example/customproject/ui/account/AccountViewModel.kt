@@ -1,7 +1,8 @@
 package com.example.customproject.ui.account
 
 
-import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,13 +12,14 @@ import com.example.customproject.model.Account
 
 class AccountViewModel : ViewModel() {
     private val accountController:AccountController = AccountController()
-    var account: MutableLiveData<List<Account>> = MutableLiveData()
+    private var account: MutableLiveData<List<Account>> = MutableLiveData()
 
-    fun getInformation():LiveData<List<Account>>
+    fun getInformation(loading:ProgressBar):LiveData<List<Account>>
     {
-        var list: MutableList<Account> = mutableListOf()
+        val list: MutableList<Account> = mutableListOf()
         accountController.get().addOnSuccessListener { it->
-            it.documents.forEach{it->
+            loading.visibility = View.GONE
+            it.documents.forEach{
                 val name = it.data?.get("name").toString()
                 val BSB = it.data?.get("BSB").toString()
                 val accountnumber = it.data?.get("Account").toString()

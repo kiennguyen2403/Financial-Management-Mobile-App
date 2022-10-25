@@ -1,33 +1,31 @@
 package com.example.customproject.ui.home
 
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.customproject.controller.TransactionController
-import com.example.customproject.model.Tag
-import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.EventListener
-import java.util.*
 
 class HomeViewModel : ViewModel() {
-    val transactionController=TransactionController()
-    var total: MutableLiveData<Int> = MutableLiveData(0)
+    private val transactionController=TransactionController()
+    private var total: MutableLiveData<Int> = MutableLiveData(0)
     var totalincome:MutableLiveData<Int> = MutableLiveData(0)
     var totalspending:MutableLiveData<Int> = MutableLiveData(0)
-    var totalincometransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
-    var totalspendingtransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
+    private var totalincometransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
+    private var totalspendingtransactionlist: MutableLiveData<List<Map<String,Long>>> = MutableLiveData()
 
 
 
-    fun getTotal():LiveData<Int>{
+    fun getTotal(loading:ProgressBar):LiveData<Int>{
         total.value=0
         totalincome.value=0
         totalspending.value=0
-        var list :MutableList<String> = mutableListOf()
+        var list :MutableList<String>
         transactionController.getAll(TransactionType.Income).addOnSuccessListener { it ->
+            loading.visibility = View.GONE
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { it ->
                 transactionController.getSpecific(TransactionType.Income,it).addOnSuccessListener{it->
@@ -53,8 +51,8 @@ class HomeViewModel : ViewModel() {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { it ->
                 transactionController.getSpecific(TransactionType.Spending,it).addOnSuccessListener{it ->
-                    it.documents.forEach {it->
-                        it.reference.addSnapshotListener{value,error->
+                    it.documents.forEach {
+                        it.reference.addSnapshotListener{ value, _ ->
                             if (value != null)
                             {
                                 if (value.data?.get("value") != null) {
@@ -73,8 +71,8 @@ class HomeViewModel : ViewModel() {
         return total
     }
     fun getallIncomeData():LiveData<List<Map<String,Long>>>{
-        var list:MutableList<String> = mutableListOf()
-        var translist: MutableList<Map<String,Long>> = mutableListOf()
+        var list:MutableList<String>
+        val translist: MutableList<Map<String,Long>> = mutableListOf()
         transactionController.getAll(TransactionType.Income).addOnSuccessListener {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { item ->
@@ -87,7 +85,7 @@ class HomeViewModel : ViewModel() {
                             {
                                 if(value.data?.get("value") != null) {
                                         total = total.plus(value.data?.get("value") as Long)
-                                        var newlist = hashMapOf<String,Long>(
+                                        val newlist = hashMapOf(
                                             item to total
                                         )
                                          translist.add(newlist)
@@ -104,20 +102,20 @@ class HomeViewModel : ViewModel() {
     }
 
     fun getallSpendingData():LiveData<List<Map<String,Long>>>{
-        var list:MutableList<String> = mutableListOf()
-        var translist: MutableList<Map<String,Long>> = mutableListOf()
+        var list:MutableList<String>
+        val translist: MutableList<Map<String,Long>> = mutableListOf()
         transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { item ->
                 var total:Long = 0
                 transactionController.getSpecific(TransactionType.Spending,item).addOnSuccessListener {
                     it.documents.forEach {
-                        it.reference.addSnapshotListener{ value,error ->
+                        it.reference.addSnapshotListener{ value, _ ->
                             if (value != null)
                             {
                                 if(value.data?.get("value") != null) {
                                     total = total.plus(value.data?.get("value") as Long)
-                                    var newlist = hashMapOf<String,Long>(
+                                    val newlist = hashMapOf(
                                         item to total
                                     )
                                     translist.add(newlist)

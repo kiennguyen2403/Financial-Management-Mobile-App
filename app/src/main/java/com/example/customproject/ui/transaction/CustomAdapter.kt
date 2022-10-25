@@ -1,6 +1,5 @@
-package com.example.customproject.ui.income
+package com.example.customproject.ui.transaction
 import android.graphics.Color
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,6 @@ class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomA
         holder.itemView.setOnClickListener{
             onItemClick?.invoke(tag.name)
         }
-
     }
 
     // return the number of the items in the list

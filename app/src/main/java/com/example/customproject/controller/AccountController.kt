@@ -9,6 +9,7 @@ import com.google.firebase.ktx.Firebase
 class AccountController {
     private val dbinstance = Firebase.firestore
 
+
     fun get(): Task<QuerySnapshot> {
         val result =  dbinstance.collection("Account").get()
         return result

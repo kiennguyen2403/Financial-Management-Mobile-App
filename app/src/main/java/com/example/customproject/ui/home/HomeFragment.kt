@@ -1,20 +1,17 @@
 package com.example.customproject.ui.home
 
+import android.annotation.SuppressLint
 import android.graphics.Color
-import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.FragmentHomeBinding
-import com.example.customproject.model.Transaction
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
@@ -22,7 +19,6 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.google.firebase.Timestamp
 
 
 class HomeFragment : Fragment() {
@@ -36,13 +32,14 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -50,24 +47,26 @@ class HomeFragment : Fragment() {
         val textView: TextView = binding.total
         val totalincome:TextView = binding.totalincome
         val totalspending:TextView = binding.totalspending
-        homeViewModel.getTotal().observe(viewLifecycleOwner) {
+        val progressBar:ProgressBar = binding.progressBar2
+
+        homeViewModel.getTotal(progressBar).observe(viewLifecycleOwner) {
             if (it != null) {
-                textView.text = "Total: " + it.toString() + "$"
+                textView.text = "Total: $it$"
             }
         }
 
         homeViewModel.totalspending.observe(viewLifecycleOwner){
-            totalspending.text = "Total spending: " + it.toString()+"$"
+            totalspending.text = "Total spending: $it$"
         }
         homeViewModel.totalincome.observe(viewLifecycleOwner){
-            totalincome.text =   "Total income: "+it.toString()+"$"
+            totalincome.text = "Total income: $it$"
         }
 
 
         spendingpieChart= binding.spendingpiechart
         setupPieChart(spendingpieChart)
         homeViewModel.getallSpendingData().observe(viewLifecycleOwner) {
-            if (it.size>0) {
+            if (it.isNotEmpty()) {
                 loadPieChartData(it,spendingpieChart)
             }
         }
@@ -76,7 +75,7 @@ class HomeFragment : Fragment() {
         incomepieChart= binding.incomepiechart
         setupPieChart(incomepieChart)
         homeViewModel.getallIncomeData().observe(viewLifecycleOwner) {
-            if (it.size>0) {
+            if (it.isNotEmpty()) {
                 loadPieChartData(it,incomepieChart)
             }
 

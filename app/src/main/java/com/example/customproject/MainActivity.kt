@@ -1,16 +1,16 @@
 package com.example.customproject
 
 import android.app.AlertDialog
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
-import android.view.Gravity
-import android.view.View
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -21,11 +21,12 @@ import com.example.customproject.controller.TagController
 import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.ActivityMainBinding
 import com.example.customproject.model.TransactionType
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity(){
     private val transactionController:TransactionController = TransactionController()
     private val notificationController:NotificationController = NotificationController()
     private val tagController:TagController = TagController()
@@ -36,16 +37,77 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private val rotateClose: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim)}
     private val fromBottom: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.fab_open)}
     private val toBottom: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.fab_close)}
+    private var mode = "light"
+    private lateinit var sharedPreferences:SharedPreferences
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.top_nav_menu, menu)
+        sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        val mode=sharedPreferences.getString("mode","").toString()
+        if (menu != null) {
+            val button =menu.findItem(R.id.setmode)
+            if (mode=="light"){
+               button.setIcon(R.drawable.ic_baseline_bedtime_24)
+            }
+            else{
+                button.setIcon(R.drawable.ic_baseline_wb_sunny_24)
+            }
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val sharedPreferences:SharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        val myEdit = sharedPreferences.edit()
+        return when (item.itemId){
+            R.id.setmode->{
+                if (mode == "light") {
+                    mode="dark"
+                    AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                        .MODE_NIGHT_YES)
+                    item.setIcon(R.drawable.ic_baseline_wb_sunny_24)
+                    myEdit.putString("mode",mode)
+                    myEdit.apply()
+                }
+                else{
+                    mode="light"
+                    AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                        .MODE_NIGHT_NO)
+                    item.setIcon(R.drawable.ic_baseline_bedtime_24)
+                    myEdit.putString("mode",mode)
+                    myEdit.apply()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        if (sharedPreferences.getString("mode","") != "")
+        {
+            mode = sharedPreferences.getString("mode","").toString()
+            if (mode=="light"){
+                AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                    .MODE_NIGHT_NO)
+
+            }
+            else{
+                AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                    .MODE_NIGHT_YES)
+
+            }
+        }
         val navView: BottomNavigationView = binding.navView
 
 
@@ -71,7 +133,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_spending,R.id.navigation_income, R.id.navigation_notifications
+                R.id.navigation_home, R.id.navigation_transaction_type,R.id.navigation_calendar, R.id.navigation_notifications,R.id.navigation_account,R.id.navigation_transaction
             )
         )
 
@@ -140,12 +202,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         typeinput.layoutParams = layoutParams
         typeinput.textAlignment= View.TEXT_ALIGNMENT_TEXT_START
 
+
         val transtype = arrayOf("Spending","Income")
         val transAdapter = ArrayAdapter(this,android.R.layout.simple_spinner_item,transtype)
         transAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         typeinput.adapter = transAdapter
-
-
 
         val taginput = Spinner(this)
         taginput.gravity = Gravity.CENTER
@@ -156,37 +217,41 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val tagAdapter = ArrayAdapter(this,android.R.layout.simple_spinner_item,taglists)
         tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         taginput.adapter = tagAdapter
-
-        if (typeinput.selectedItem == "Income") {
-            Log.d("200","Income")
-            tagController.getAll(TransactionType.Income).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    for (document: QueryDocumentSnapshot in task.result) {
-                        val tag = document.getString("desc")
-                        if (tag != "") {
-                            taglists.add(tag as String)
+        typeinput.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (typeinput.selectedItem == "Income") {
+                    taglists.clear()
+                    tagController.getAll(TransactionType.Income).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            for (document: QueryDocumentSnapshot in task.result) {
+                                val tag = document.getString("desc")
+                                if (tag != "") {
+                                    taglists.add(tag as String)
+                                }
+                            }
+                            tagAdapter.notifyDataSetChanged()
                         }
                     }
-                    tagAdapter.notifyDataSetChanged()
-                }
-            }
 
-        }
-        else if (typeinput.selectedItem == "Spending"){
-            Log.d("200","Spending")
-            tagController.getAll(TransactionType.Spending).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    for (document: QueryDocumentSnapshot in task.result) {
-                        val tag = document.getString("desc")
-                        if (tag != null) {
-                            taglists.add(tag)
+                } else {
+                    taglists.clear()
+                    tagController.getAll(TransactionType.Spending).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            for (document: QueryDocumentSnapshot in task.result) {
+                                val tag = document.getString("desc")
+                                if (tag != null) {
+                                    taglists.add(tag)
+                                }
+                            }
+                            tagAdapter.notifyDataSetChanged()
                         }
                     }
-                    tagAdapter.notifyDataSetChanged()
                 }
             }
-        }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
 
+            }
+        }
 
         val lp = LinearLayout(this)
         lp.orientation = LinearLayout.VERTICAL
@@ -196,12 +261,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         lp.addView(typeinput,layoutParams)
         lp.addView(taginput,layoutParams)
 
-
-
         val builder = AlertDialog.Builder(this)
 
         builder.setMessage(" New transaction")
-            .setPositiveButton("Create") { dialog, id ->
+            .setPositiveButton("Create") { _, _ ->
                 val result = transactionController.Create(
                     TransactionType.Income,
                     valueinput.text.toString().toInt(),
@@ -209,15 +272,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 )
                 notificationController.Add("You have earn " + valueinput.text + " for " + descinput.toString())
                 transactionController.Add(result, TransactionType.Income,taginput.selectedItem.toString())
-                val myToast = Toast.makeText(this, "Add Successfully", Toast.LENGTH_SHORT)
-                myToast.setGravity(Gravity.LEFT, 200, 200)
+                val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
+                myToast.setGravity(Gravity.START, 200, 200)
                 myToast.show()
             }.setNegativeButton("Cancel") { _, _ ->
             }
             .setView(lp)
         val alertdialog = builder.create()
         alertdialog.show()
-
     }
 
     private fun addLabel(){
@@ -258,8 +320,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
         builder.setMessage(" New transaction's tag")
-            .setPositiveButton("Create") { dialog, id ->
-
+            .setPositiveButton("Create") { _, _ ->
                 var transactionType = TransactionType.Income
                 if (typeinput.selectedItem.toString() == "Spending") {
                     transactionType = TransactionType.Spending
@@ -271,8 +332,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 )
                 notificationController.Add("You have created new tag: " + nameinput.text + " for " + typeinput.selectedItem.toString())
                 tagController.Add(result)
-                val myToast = Toast.makeText(this, "Add Successfully", Toast.LENGTH_SHORT)
-                myToast.setGravity(Gravity.LEFT, 200, 200)
+                val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
+                myToast.setGravity(Gravity.START, 200, 200)
                 myToast.show()
             }.setNegativeButton("Cancel") { _, _ ->
 
@@ -283,36 +344,4 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         alertdialog.show()
     }
 
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-
-    }
-
-    /*
-    fun isOnline(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (connectivityManager != null) {
-            val capabilities =
-                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                    return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                    return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                    return true
-                }
-            }
-        }
-        return false
-    }
-*/
 }

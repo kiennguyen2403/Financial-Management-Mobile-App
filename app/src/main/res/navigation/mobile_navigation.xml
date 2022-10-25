@@ -1,83 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/mobile_navigation"
+            app:startDestination="@+id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.customproject.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+            android:id="@+id/navigation_home"
+            android:name="com.example.customproject.ui.home.HomeFragment"
+            android:label="@string/title_home"
+            tools:layout="@layout/fragment_home" />
     <fragment
             android:id="@+id/navigation_account"
             android:name="com.example.customproject.ui.account.AccountFragment"
             android:label="@string/title_account"
             tools:layout="@layout/fragment_account" />
     <fragment
-        android:id="@+id/navigation_spending"
-        android:name="com.example.customproject.ui.spending.SpendingFragment"
-        android:label="@string/title_spending"
-        tools:layout="@layout/fragment_income" >
-        <action
-            android:id="@+id/action_navigation_spending_to_navigation_transactionlist"
-            app:destination="@id/navigation_transactionlist">
-            <argument
-                android:name="transType"
-                android:defaultValue="No value"
-                app:argType="string"
-                app:nullable="false" />
-            <argument
-                android:name="labelName"
-                android:defaultValue="No value"
-                app:argType="string"
-                app:nullable="false" />
-        </action>
+            android:id="@+id/navigation_calendar"
+            android:name="com.example.customproject.ui.calendar.CalendarFragment"
+            android:label="@string/title_calendar"
+            tools:layout="@layout/fragment_calendar" />
+    <fragment
+            android:id="@+id/navigation_transaction_type"
+            android:name="com.example.customproject.ui.transaction_type.TransactionTypeFragment"
+            android:label="@string/title_transaction_type"
+            tools:layout="@layout/fragment_transaction_type" >
+        <action android:id="@+id/action_navigation_transaction_type_to_navigation_transactionlist2"
+                app:destination="@id/navigation_transactionlist"/>
     </fragment>
     <fragment
-        android:id="@+id/navigation_income"
-        android:name="com.example.customproject.ui.income.IncomeFragment"
-        android:label="@string/title_income"
-        tools:layout="@layout/fragment_income" >
-        <action
-            android:id="@+id/action_navigation_income_to_navigation_transactionlist"
-            app:destination="@id/navigation_transactionlist"
-            app:launchSingleTop="false"
-            app:popUpToInclusive="false">
-            <argument
-                android:name="transType"
-                android:defaultValue="No value"
-                app:argType="string"
-                app:nullable="false" />
-            <argument
-                android:name="labelName"
-                android:defaultValue="No value"
-                app:argType="string"
-                app:nullable="false" />
-        </action>
-    </fragment>
+            android:id="@+id/navigation_transaction"
+            android:name="com.example.customproject.ui.transaction.TransactionFragment"
+            android:label="@string/title_transaction"
+            tools:layout="@layout/fragment_transaction" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.customproject.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+            android:id="@+id/navigation_notifications"
+            android:name="com.example.customproject.ui.notifications.NotificationsFragment"
+            android:label="@string/title_notifications"
+            tools:layout="@layout/fragment_notifications" />
     <fragment
-        android:id="@+id/navigation_transactionlist"
-        android:name="com.example.customproject.ui.transactionlist.TransactionsListFragmant"
-        android:label="@string/title_transactionslist"
-        tools:layout="@layout/fragment_transactions_list" >
+            android:id="@+id/navigation_transactionlist"
+            android:name="com.example.customproject.ui.transaction_list.TransactionsListFragmant"
+            android:label="@string/title_transactionslist"
+            tools:layout="@layout/fragment_transactions_list" >
         <argument
-            android:name="transType"
-            app:argType="string"
-            app:nullable="false"
-            android:defaultValue="String" />
+                android:name="transType"
+                app:argType="string"
+                app:nullable="false"
+                android:defaultValue="String" />
         <argument
-            android:name="labelName"
-            app:argType="string"
-            app:nullable="false"
-            android:defaultValue="String" />
+                android:name="labelName"
+                app:argType="string"
+                app:nullable="false"
+                android:defaultValue="String" />
     </fragment>
 
 </navigation>

@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.customproject.MainActivity
 import com.example.customproject.databinding.ActivityLoginBinding
 import com.example.customproject.R
@@ -35,27 +36,33 @@ class LoginActivity : AppCompatActivity() {
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-
         auth = Firebase.auth
+        val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        if (sharedPreferences.getString("mode","") != "")
+        {
+            val mode = sharedPreferences.getString("mode","").toString()
+            if (mode=="light"){
+                AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                    .MODE_NIGHT_NO)
 
+            }
+            else{
+                AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
+                    .MODE_NIGHT_YES)
+
+            }
+        }
         val username = binding.username
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
         val signup = binding.signup
-        if (signup != null) {
-            signup.setTextColor(R.color.purple_500)
-        }
-        if (signup != null) {
-            signup.setOnClickListener{
-                //Navigation.navigate()
-            }
+        signup?.setTextColor(R.color.purple_500)
+        signup?.setOnClickListener{
+            //Navigation.navigate()
         }
 
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -116,9 +123,6 @@ class LoginActivity : AppCompatActivity() {
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 signIn(username.text.toString(), password.text.toString(),loading)
-                /*
-                loginViewModel.login(username.text.toString(), password.text.toString()
-                 */
             }
         }
     }
@@ -135,23 +139,6 @@ class LoginActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
     }
-
-    fun createAccount(email:String,password:String){
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("200", "createUserWithEmail:success")
-                    val user = auth.currentUser
-403                    // If sign in fails, display a message to the user.
-                    Log.w("404", "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
-                    //   updateUI(null)
-                }
-            }
-    }
-
     private fun signIn(email: String, password: String,loading:ProgressBar) {
         // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
@@ -175,17 +162,6 @@ class LoginActivity : AppCompatActivity() {
 
         // [END sign_in_with_email]
     }
-
-    private fun sendEmailVerification() {
-        // [START send_email_verification]
-        val user = auth.currentUser!!
-        user.sendEmailVerification()
-            .addOnCompleteListener(this) { task ->
-                // Email Verification sent
-            }
-        // [END send_email_verification]
-    }
-
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
