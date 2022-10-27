@@ -35,7 +35,7 @@ class HomeViewModel : ViewModel() {
                             {
                                 if (value.data?.get("value") != null)
                                 {
-                                    total.value = total.value?.plus(value.data?.get("value").toString().toInt())
+
                                     totalincome.value = totalincome.value?.plus(value.data?.get("value").toString().toInt())
                                 }
                             }
@@ -56,13 +56,12 @@ class HomeViewModel : ViewModel() {
                             if (value != null)
                             {
                                 if (value.data?.get("value") != null) {
-                                    total.value = total.value?.minus(value.data?.get("value").toString().toInt())
                                     totalspending.value = totalspending.value?.plus(value.data?.get("value").toString().toInt())
+                                    total.value= totalincome.value!! - totalspending.value!!
                                 }
                             }
                         }
                     }
-
                 }
             }
         }.addOnFailureListener {
@@ -78,7 +77,6 @@ class HomeViewModel : ViewModel() {
             list.forEach { item ->
                 var total:Long = 0
                 transactionController.getSpecific(TransactionType.Income,item).addOnSuccessListener {
-
                     it.documents.forEach {
                         it.reference.addSnapshotListener{ value,error ->
                             if (value != null)
@@ -107,8 +105,8 @@ class HomeViewModel : ViewModel() {
         transactionController.getAll(TransactionType.Spending).addOnSuccessListener {
             list = it.data?.get("tag") as MutableList<String>
             list.forEach { item ->
-                var total:Long = 0
                 transactionController.getSpecific(TransactionType.Spending,item).addOnSuccessListener {
+                    var total:Long = 0
                     it.documents.forEach {
                         it.reference.addSnapshotListener{ value, _ ->
                             if (value != null)

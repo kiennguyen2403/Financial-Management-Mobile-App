@@ -94,9 +94,20 @@ class HomeFragment : Fragment() {
 
     private fun loadPieChartData(transactionlist: List<Map<String,Long>>,pieChart: PieChart) {
         val entries: ArrayList<PieEntry> = ArrayList()
-
+        var labelname=""
+        var total = 0F
         transactionlist.forEach { item->
-            entries.add(PieEntry(item[item.keys.first()].toString().toFloat(), item.keys.first()))
+            if (labelname!=item.keys.first()) {
+                if (labelname!="") {
+                    entries.add(PieEntry(item[item.keys.first()].toString().toFloat(), item.keys.first()))
+                }
+                total = 0F
+                labelname = item.keys.first()
+            }
+            else{
+                total.plus(item[item.keys.first()].toString().toFloat())
+
+            }
         }
 
         val colors: ArrayList<Int> = ArrayList()
