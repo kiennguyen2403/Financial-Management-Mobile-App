@@ -17,7 +17,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.customproject.MainActivity
+import com.example.customproject.ui.mainactivity.MainActivity
 import com.example.customproject.databinding.ActivityLoginBinding
 import com.example.customproject.R
 import com.google.firebase.auth.FirebaseAuth

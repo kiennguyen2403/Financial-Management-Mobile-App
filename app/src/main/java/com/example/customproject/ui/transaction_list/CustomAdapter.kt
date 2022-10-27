@@ -1,5 +1,6 @@
 package com.example.customproject.ui.transaction_list
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import java.util.*
 class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     // create new views
-
+    var onItemClick: ((Transaction)->Unit)? = null
     var Translist:List<Transaction> = mList
     @SuppressLint("NotifyDataSetChanged")
     fun filterList(text:String){
@@ -31,9 +32,7 @@ class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapt
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.card_view_design_transaction, parent, false)
-        view.setOnClickListener {
 
-        }
         return ViewHolder(view)
     }
 
@@ -48,6 +47,9 @@ class CustomAdapter(mList: List<Transaction>) : RecyclerView.Adapter<CustomAdapt
         holder.desc.text = transaction.desc
         holder.value.text = transaction.value.toString()+"$"
         holder.date.text = transaction.date.toDate().toString()
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(transaction)
+        }
     }
 
     // return the number of the items in the list

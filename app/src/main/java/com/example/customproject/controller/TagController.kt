@@ -5,9 +5,6 @@ import com.example.customproject.model.Tag
 import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase

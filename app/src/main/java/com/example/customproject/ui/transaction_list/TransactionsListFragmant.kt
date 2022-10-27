@@ -1,19 +1,26 @@
 package com.example.customproject.ui.transaction_list
 
+
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context.SEARCH_SERVICE
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customproject.R
 import com.example.customproject.databinding.FragmentTransactionsListBinding
 import com.example.customproject.model.Transaction
 import com.example.customproject.model.TransactionType
+import com.example.customproject.ui.bottomfragment.CustomBottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+
 
 class TransactionsListFragmant : Fragment() {
 
@@ -34,7 +41,7 @@ class TransactionsListFragmant : Fragment() {
         val args = bundle?.let { TransactionsListFragmantArgs.fromBundle(it) }
         val labelName = args?.labelName
         val transType = args?.transType
-
+        val fragmentManager = activity?.supportFragmentManager
         val list: MutableList<Transaction> = mutableListOf()
         recycleview.layoutManager = LinearLayoutManager(null, LinearLayoutManager.VERTICAL, false)
         if (transType == "Income") {
@@ -44,6 +51,15 @@ class TransactionsListFragmant : Fragment() {
                 ) { transactions ->
                     if (transactions.isNotEmpty()) {
                         adapter = CustomAdapter(transactions)
+                        adapter.onItemClick = {
+                            it.id?.let { it1 ->
+                                CustomBottomSheetDialogFragment(it1,TransactionType.Income,args.labelName).apply {
+                                    if (fragmentManager != null) {
+                                        show(fragmentManager,CustomBottomSheetDialogFragment.TAG)
+                                    }
+                                }
+                            }
+                        }
                         recycleview.adapter = adapter
                         list.clear()
                         transactions.forEach {
@@ -61,6 +77,15 @@ class TransactionsListFragmant : Fragment() {
                 ) { transactions ->
                     if (transactions.isNotEmpty()) {
                         adapter = CustomAdapter(transactions)
+                        adapter.onItemClick = {
+                            it.id?.let { it1 ->
+                                CustomBottomSheetDialogFragment(it1,TransactionType.Spending,args.labelName).apply {
+                                    if (fragmentManager != null) {
+                                        show(fragmentManager,CustomBottomSheetDialogFragment.TAG)
+                                    }
+                                }
+                            }
+                        }
                         recycleview.adapter = adapter
                         list.clear()
                         transactions.forEach {
@@ -71,13 +96,21 @@ class TransactionsListFragmant : Fragment() {
             }
         }
 
-
         if (labelName != null) {
             transactionsListViewModel.getallTransaction(TransactionType.Income, args.labelName).observe(
                 viewLifecycleOwner
             ) { transactions ->
                 if (transactions.isNotEmpty()) {
                     adapter = CustomAdapter(transactions)
+                    adapter.onItemClick = {
+                        it.id?.let { it1 ->
+                            CustomBottomSheetDialogFragment(it1,TransactionType.Income,args.labelName).apply {
+                                if (fragmentManager != null) {
+                                    show(fragmentManager,CustomBottomSheetDialogFragment.TAG)
+                                }
+                            }
+                        }
+                    }
                     recycleview.adapter = adapter
                     list.clear()
                     transactions.forEach {
@@ -86,6 +119,8 @@ class TransactionsListFragmant : Fragment() {
                 }
             }
         }
+
+
         adapter = CustomAdapter(list)
         recycleview.adapter = adapter
         val actionBar = activity?.actionBar
@@ -96,7 +131,6 @@ class TransactionsListFragmant : Fragment() {
         search.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-
                 return false
             }
 
@@ -114,6 +148,13 @@ class TransactionsListFragmant : Fragment() {
             }
 
         })
+
         return binding.root
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Resume","Resume")
+    }
+
 }

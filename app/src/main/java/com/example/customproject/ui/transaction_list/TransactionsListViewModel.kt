@@ -1,5 +1,6 @@
 package com.example.customproject.ui.transaction_list
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,17 +13,18 @@ class TransactionsListViewModel : ViewModel() {
     var transactionlist: MutableLiveData<List<Transaction>> = MutableLiveData()
 
    fun getallTransaction(transactionType: TransactionType,labelName:String): LiveData<List<Transaction>> {
-
        val translist: MutableList<Transaction> = mutableListOf()
-        transactionController.getSpecific(transactionType,labelName.replace("\\s".toRegex(), "")).addOnSuccessListener { it ->
+        transactionController.getSpecific(transactionType,labelName).addOnSuccessListener { it ->
             it.documents.forEach {
                 it.reference.addSnapshotListener{ value, _ ->
                     if(value != null)
-                    {   if(value.data?.get("value") != null) {
+                    {
+                        Log.d("data",value.id)
+                        if(value.data?.get("value") != null) {
                         val newtransaction = transactionController.Create(
-                            transactionType,
                             value.data?.get("value") as Long,
-                            value.data?.get("desc") as String
+                            value.data?.get("desc") as String,
+                            value.id
                         )
                         translist.add(newtransaction)
 

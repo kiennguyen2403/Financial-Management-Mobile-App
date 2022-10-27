@@ -1,9 +1,14 @@
-package com.example.customproject
+package com.example.customproject.ui.mainactivity
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -11,34 +16,37 @@ import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.customproject.R
 import com.example.customproject.controller.NotificationController
 import com.example.customproject.controller.TagController
 import com.example.customproject.controller.TransactionController
 import com.example.customproject.databinding.ActivityMainBinding
 import com.example.customproject.model.TransactionType
+import com.example.customproject.ui.home.HomeFragment
+import com.example.customproject.ui.home.HomeViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 
 class MainActivity : AppCompatActivity(){
-    private val transactionController:TransactionController = TransactionController()
-    private val notificationController:NotificationController = NotificationController()
-    private val tagController:TagController = TagController()
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private var clicked: Boolean = false
     private val rotateOpen: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim)}
     private val rotateClose: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim)}
     private val fromBottom: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.fab_open)}
     private val toBottom: Animation by lazy {AnimationUtils.loadAnimation(this, R.anim.fab_close)}
     private var mode = "light"
+    private var clicked: Boolean = false
     private lateinit var sharedPreferences:SharedPreferences
+    private lateinit var mainActivityViewModel: MainActivityViewModel
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -47,6 +55,7 @@ class MainActivity : AppCompatActivity(){
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.top_nav_menu, menu)
+        mainActivityViewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
         sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
         val mode=sharedPreferences.getString("mode","").toString()
         if (menu != null) {
@@ -66,7 +75,7 @@ class MainActivity : AppCompatActivity(){
         val sharedPreferences:SharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
         val myEdit = sharedPreferences.edit()
         return when (item.itemId){
-            R.id.setmode->{
+            R.id.setmode ->{
                 if (mode == "light") {
                     mode="dark"
                     AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate
@@ -133,7 +142,12 @@ class MainActivity : AppCompatActivity(){
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_transaction_type,R.id.navigation_calendar, R.id.navigation_notifications,R.id.navigation_account,R.id.navigation_transaction
+                R.id.navigation_home,
+                R.id.navigation_transaction_type,
+                R.id.navigation_calendar,
+                R.id.navigation_notifications,
+                R.id.navigation_account,
+                R.id.navigation_transaction,
             )
         )
 
@@ -141,6 +155,10 @@ class MainActivity : AppCompatActivity(){
         navView.setupWithNavController(navController)
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("Resume","Resume")
+    }
     private fun onAddButtonClicked(b1:FloatingActionButton,b2:FloatingActionButton,b3:FloatingActionButton) {
         setVisibility(clicked,b1,b2)
         setAnimation(clicked,b1, b2,b3)
@@ -179,6 +197,7 @@ class MainActivity : AppCompatActivity(){
     }
 
 
+    @SuppressLint("ResourceType")
     private fun addTrans(){
 
         val layoutParams = LinearLayout.LayoutParams(  LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -203,7 +222,7 @@ class MainActivity : AppCompatActivity(){
         typeinput.textAlignment= View.TEXT_ALIGNMENT_TEXT_START
 
 
-        val transtype = arrayOf("Spending","Income")
+        val transtype = arrayOf("Income","Spending")
         val transAdapter = ArrayAdapter(this,android.R.layout.simple_spinner_item,transtype)
         transAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         typeinput.adapter = transAdapter
@@ -219,34 +238,7 @@ class MainActivity : AppCompatActivity(){
         taginput.adapter = tagAdapter
         typeinput.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (typeinput.selectedItem == "Income") {
-                    taglists.clear()
-                    tagController.getAll(TransactionType.Income).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            for (document: QueryDocumentSnapshot in task.result) {
-                                val tag = document.getString("desc")
-                                if (tag != "") {
-                                    taglists.add(tag as String)
-                                }
-                            }
-                            tagAdapter.notifyDataSetChanged()
-                        }
-                    }
-
-                } else {
-                    taglists.clear()
-                    tagController.getAll(TransactionType.Spending).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            for (document: QueryDocumentSnapshot in task.result) {
-                                val tag = document.getString("desc")
-                                if (tag != null) {
-                                    taglists.add(tag)
-                                }
-                            }
-                            tagAdapter.notifyDataSetChanged()
-                        }
-                    }
-                }
+                    mainActivityViewModel.getLabel(taglists,tagAdapter, typeinput.selectedItem.toString())
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -265,21 +257,70 @@ class MainActivity : AppCompatActivity(){
 
         builder.setMessage(" New transaction")
             .setPositiveButton("Create") { _, _ ->
-                val result = transactionController.Create(
-                    TransactionType.Income,
-                    valueinput.text.toString().toInt(),
-                    descinput.text.toString()
-                )
-                notificationController.Add("You have earn " + valueinput.text + " for " + descinput.toString())
-                transactionController.Add(result, TransactionType.Income,taginput.selectedItem.toString())
+                if (typeinput.selectedItem.toString() == "Income")
+                {
+                mainActivityViewModel.createTransaction(TransactionType.Income, valueinput.text.toString().toInt(),descinput.text.toString(),taginput.selectedItem.toString())
+                mainActivityViewModel.createNotification("You have earn " + valueinput.text.toString() + " for " + descinput.text.toString())
                 val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
                 myToast.setGravity(Gravity.START, 200, 200)
                 myToast.show()
+                    val currentFragment = supportFragmentManager.fragments.last()
+                    val frag =currentFragment.childFragmentManager.fragments[0]
+                    frag.getFragmentManager()?.beginTransaction()?.detach(frag)?.commit();
+                    frag.getFragmentManager()?.beginTransaction()?.attach(frag)?.commit();
+                }else{
+                    mainActivityViewModel.createTransaction(TransactionType.Spending, valueinput.text.toString().toInt(),descinput.text.toString(),taginput.selectedItem.toString())
+                    mainActivityViewModel.createNotification("You have spend " + valueinput.text.toString() + " for " + descinput.text.toString())
+                    val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
+                    myToast.setGravity(Gravity.START, 200, 200)
+                    myToast.show()
+                    val currentFragment = supportFragmentManager.fragments.last()
+                    val frag =currentFragment.childFragmentManager.fragments[0]
+                    frag.getFragmentManager()?.beginTransaction()?.detach(frag)?.commit();
+                    frag.getFragmentManager()?.beginTransaction()?.attach(frag)?.commit();
+
+                }
             }.setNegativeButton("Cancel") { _, _ ->
+
             }
             .setView(lp)
         val alertdialog = builder.create()
         alertdialog.show()
+        if (valueinput.text.isEmpty() and descinput.text.isEmpty()) {
+            alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        }
+
+        valueinput.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (valueinput.text.isNotEmpty() and descinput.text.isNotEmpty())
+                    alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+            }
+        })
+
+        descinput.addTextChangedListener(object:TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (valueinput.text.isNotEmpty() and descinput.text.isNotEmpty()) {
+                    alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                }
+            }
+
+        })
     }
 
     private fun addLabel(){
@@ -325,16 +366,15 @@ class MainActivity : AppCompatActivity(){
                 if (typeinput.selectedItem.toString() == "Spending") {
                     transactionType = TransactionType.Spending
                 }
-                val result = tagController.Create(
-                    nameinput.text.toString(),
-                    colorinput.text.toString(),
-                    transactionType
-                )
-                notificationController.Add("You have created new tag: " + nameinput.text + " for " + typeinput.selectedItem.toString())
-                tagController.Add(result)
+                mainActivityViewModel.createLabel( nameinput.text.toString(), colorinput.text.toString(),transactionType)
+                mainActivityViewModel.createNotification("You have created new tag: " + nameinput.text.toString() + " for " + typeinput.selectedItem.toString())
                 val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
                 myToast.setGravity(Gravity.START, 200, 200)
                 myToast.show()
+                val currentFragment = supportFragmentManager.fragments.last()
+                val frag =currentFragment.childFragmentManager.fragments[0]
+                frag.getFragmentManager()?.beginTransaction()?.detach(frag)?.commit();
+                frag.getFragmentManager()?.beginTransaction()?.attach(frag)?.commit();
             }.setNegativeButton("Cancel") { _, _ ->
 
 
@@ -342,6 +382,24 @@ class MainActivity : AppCompatActivity(){
             .setView(lp)
         val alertdialog = builder.create()
         alertdialog.show()
+        if (nameinput.text.isEmpty() and colorinput.text.isEmpty()) {
+            alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        }
+        nameinput.addTextChangedListener(object:TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (nameinput.text.isNotEmpty() and colorinput.text.isNotEmpty()) {
+                    alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                }
+            }
+        })
     }
 
 }
