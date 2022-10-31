@@ -59,8 +59,6 @@ class TransactionController {
 
 
     fun getSpecific(transactionType: TransactionType, tag: String): Task<QuerySnapshot> {
-
-
         return dbinstance.collection("Transaction").document(transactionType.toString()).collection(tag).get()
     }
 

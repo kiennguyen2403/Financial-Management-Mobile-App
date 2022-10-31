@@ -3,9 +3,11 @@ package com.example.customproject.ui.calendar
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.customproject.databinding.FragmentCalendarBinding
@@ -41,7 +43,21 @@ class CalendarFragment : Fragment() {
         }
         calendar.setListener(object : CompactCalendarViewListener {
             override fun onDayClick(dateClicked: Date) {
-                calendar.getEvents(dateClicked)
+               val events = calendar.getEvents(dateClicked)
+//                var incomeNum =0
+//                var spendingNum = 0
+//                events.forEach {
+//                    if( it.color==-65536)
+//                    {
+//                        spendingNum+=1
+//                    }
+//                    else{
+//                        incomeNum+=1
+//                    }
+//                }
+//                val myToast = Toast.makeText(context, "You have make "+incomeNum.toString() +" income transactions and "+spendingNum.toString()+" spending transactions"  , Toast.LENGTH_SHORT)
+//                myToast.setGravity(Gravity.START, 200, 200)
+//                myToast.show()
             }
 
             override fun onMonthScroll(firstDayOfNewMonth: Date) {

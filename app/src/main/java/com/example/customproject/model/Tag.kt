@@ -2,7 +2,7 @@ package com.example.customproject.model
 
 import com.google.type.Color
 
-class Tag(_name:String,_color:String, _type: TransactionType) {
+class Tag(_name:String,_color:String, _type: TransactionType,_id:String?) {
 
     var name:String=_name
         set(value){
@@ -18,6 +18,9 @@ class Tag(_name:String,_color:String, _type: TransactionType) {
         set(value) {
         type = value
     }
-
+    var id:String?=_id
+        set(value) {
+            this.id=value
+        }
 
 }

@@ -13,6 +13,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customproject.databinding.FragmentTransactionBinding
+import com.example.customproject.model.TransactionType
+import com.example.customproject.ui.bottomfragment.CustomBottomSheetDialogFragment
+import com.example.customproject.ui.transaction_list.TransactionsListFragmantArgs
 import com.example.customproject.ui.transaction_type.TransactionTypeFragmentDirections
 
 private const val ARG_OBJECT = "object"
@@ -37,6 +40,7 @@ class TransactionFragment : Fragment() {
         val recycleview:RecyclerView= binding.recyclerview
         val notification= binding.notification
         val progressBar:ProgressBar = binding.progressBar
+        val fragmentManager = activity?.supportFragmentManager
         notification.text="No group has been created"
         var adapter:CustomAdapter
         recycleview.layoutManager = LinearLayoutManager(null,LinearLayoutManager.VERTICAL ,false)
@@ -53,6 +57,15 @@ class TransactionFragment : Fragment() {
                                 )
                             Navigation.findNavController(root).navigate(action)
                         }
+//                        adapter.onItemLongClick = {
+//                            it.id?.let { it1 ->
+//                                CustomBottomSheetDialogFragment(it1, TransactionType.Income,"").apply {
+//                                    if (fragmentManager != null) {
+//                                        show(fragmentManager, CustomBottomSheetDialogFragment.TAG)
+//                                    }
+//                                }
+//                            }
+//                        }
                     } else {
                         adapter.onItemClick = {
                             val action =
@@ -61,6 +74,15 @@ class TransactionFragment : Fragment() {
                                 )
                             Navigation.findNavController(root).navigate(action)
                         }
+//                        adapter.onItemLongClick = {
+//                            it.id?.let { it1 ->
+//                                CustomBottomSheetDialogFragment(it1, TransactionType.Income,"").apply {
+//                                    if (fragmentManager != null) {
+//                                        show(fragmentManager, CustomBottomSheetDialogFragment.TAG)
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                     recycleview.adapter = adapter
                 }

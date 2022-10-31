@@ -11,9 +11,9 @@ import com.google.firebase.ktx.Firebase
 
 class TagController {
     private val dbinstance= Firebase.firestore
-    fun Create(_name: String, _color: String, _type: TransactionType): Tag
+    fun Create(_name: String, _color: String, _type: TransactionType,id:String): Tag
     {
-        val tag = Tag(_name, _color, _type)
+        val tag = Tag(_name, _color, _type,id)
         return tag
     }
 
@@ -33,7 +33,7 @@ class TagController {
 
     }
 
-
+    /*
     fun Update(tag:Tag, data:HashMap<String,Any>)
     {
         dbinstance.collection("Tag")
@@ -51,6 +51,7 @@ class TagController {
             .addOnSuccessListener { Log.d("200", "DocumentSnapshot successfully deleted!") }
             .addOnFailureListener { e -> Log.w("404", "Error deleting document", e) }
     }
+    */
 
     fun getAll(transactionType: TransactionType): Task<QuerySnapshot> {
         val snapshot = dbinstance.collection("Tag").whereEqualTo("type",transactionType.toString()).get()

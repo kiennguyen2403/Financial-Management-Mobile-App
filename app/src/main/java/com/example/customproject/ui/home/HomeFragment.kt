@@ -99,9 +99,9 @@ class HomeFragment : Fragment() {
         transactionlist.forEach { item->
             if (labelname!=item.keys.first()) {
                 if (labelname!="") {
-                    entries.add(PieEntry(item[item.keys.first()].toString().toFloat(), item.keys.first()))
+                    entries.add(PieEntry(total, labelname))
                 }
-                total = 0F
+                total = item[item.keys.first()].toString().toFloat()
                 labelname = item.keys.first()
             }
             else{
@@ -109,6 +109,7 @@ class HomeFragment : Fragment() {
 
             }
         }
+        entries.add(PieEntry(total, labelname))
 
         val colors: ArrayList<Int> = ArrayList()
         for (color in ColorTemplate.MATERIAL_COLORS) {
@@ -117,7 +118,7 @@ class HomeFragment : Fragment() {
         for (color in ColorTemplate.VORDIPLOM_COLORS) {
             colors.add(color)
         }
-        val dataSet = PieDataSet(entries, "Expense Category")
+        val dataSet = PieDataSet(entries, "")
         dataSet.colors = colors
         val data = PieData(dataSet)
         data.setDrawValues(true)

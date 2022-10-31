@@ -11,6 +11,7 @@ import com.example.customproject.model.Tag
 
 class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
     var onItemClick: ((String)->Unit)? = null
+    var onItemLongClick: ((Tag)->Unit)? = null
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -31,6 +32,13 @@ class CustomAdapter(private val mList: List<Tag>) : RecyclerView.Adapter<CustomA
         holder.itemView.setOnClickListener{
             onItemClick?.invoke(tag.name)
         }
+        /*
+        holder.itemView.setOnLongClickListener {
+            onItemLongClick?.invoke(tag)
+            true
+        }
+        */
+
     }
 
     // return the number of the items in the list

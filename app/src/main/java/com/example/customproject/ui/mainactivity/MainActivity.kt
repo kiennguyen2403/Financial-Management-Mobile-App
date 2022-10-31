@@ -366,6 +366,8 @@ class MainActivity : AppCompatActivity(){
                 if (typeinput.selectedItem.toString() == "Spending") {
                     transactionType = TransactionType.Spending
                 }
+                if (colorTransformation(colorinput.text.toString())!="No colour found")
+                {
                 mainActivityViewModel.createLabel( nameinput.text.toString(), colorinput.text.toString(),transactionType)
                 mainActivityViewModel.createNotification("You have created new tag: " + nameinput.text.toString() + " for " + typeinput.selectedItem.toString())
                 val myToast = Toast.makeText(this, "Add Successfully", LENGTH_SHORT)
@@ -375,6 +377,12 @@ class MainActivity : AppCompatActivity(){
                 val frag =currentFragment.childFragmentManager.fragments[0]
                 frag.getFragmentManager()?.beginTransaction()?.detach(frag)?.commit();
                 frag.getFragmentManager()?.beginTransaction()?.attach(frag)?.commit();
+                }
+                else{
+                    val myToast = Toast.makeText(this, "No colour found", LENGTH_SHORT)
+                    myToast.setGravity(Gravity.START, 200, 200)
+                    myToast.show()
+                }
             }.setNegativeButton("Cancel") { _, _ ->
 
 
@@ -400,6 +408,37 @@ class MainActivity : AppCompatActivity(){
                 }
             }
         })
+
+        colorinput.addTextChangedListener(object:TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (nameinput.text.isNotEmpty() and colorinput.text.isNotEmpty()) {
+                    alertdialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                }
+            }
+        })
+    }
+
+    private fun colorTransformation(color:String):String{
+        when (color.lowercase())
+        {
+            "red"-> return "#EE4B2B"
+            "orange"-> return "#FFBF00"
+            "yellow"-> return "#ffff00"
+            "green"-> return "#00FF00"
+            "blue"-> return "#0000FF"
+            "indigo"-> return "#4b0082"
+            "violet"->return "#9B26B6"
+        }
+
+        return "No colour found"
     }
 
 }

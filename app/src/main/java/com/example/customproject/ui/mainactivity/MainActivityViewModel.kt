@@ -14,7 +14,7 @@ class MainActivityViewModel:ViewModel() {
     private lateinit var tagController: TagController
     fun createLabel(name:String,color:String,transactionType: TransactionType){
         tagController = TagController()
-        val result = tagController.Create(name,color,transactionType)
+        val result = tagController.Create(name,color,transactionType,"")
         tagController.Add(result)
     }
 

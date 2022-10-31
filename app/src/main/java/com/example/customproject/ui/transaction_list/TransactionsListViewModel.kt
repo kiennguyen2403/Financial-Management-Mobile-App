@@ -19,7 +19,6 @@ class TransactionsListViewModel : ViewModel() {
                 it.reference.addSnapshotListener{ value, _ ->
                     if(value != null)
                     {
-                        Log.d("data",value.id)
                         if(value.data?.get("value") != null) {
                         val newtransaction = transactionController.Create(
                             value.data?.get("value") as Long,

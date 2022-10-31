@@ -21,7 +21,7 @@ class TransactionViewModel : ViewModel() {
             tagController.getAll(TransactionType.Income).addOnSuccessListener { result ->
                loading.visibility = View.GONE
                result.documents.forEach {
-                  val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Income)
+                  val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Income, it.id)
                   list.add(newtag)
                }
                taglist.value=list
@@ -32,7 +32,7 @@ class TransactionViewModel : ViewModel() {
          tagController.getAll(TransactionType.Spending).addOnSuccessListener { result ->
             loading.visibility = View.GONE
             result.documents.forEach {
-               val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Income)
+               val newtag = tagController.Create(it.data?.get("desc") as String,it.data?.get("color") as String,TransactionType.Income,it.id)
                list.add(newtag)
             }
             taglist.value=list

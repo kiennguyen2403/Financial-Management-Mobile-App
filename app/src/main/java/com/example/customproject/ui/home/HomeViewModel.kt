@@ -35,7 +35,7 @@ class HomeViewModel : ViewModel() {
                             {
                                 if (value.data?.get("value") != null)
                                 {
-
+                                    total.value = total.value?.plus(value.data?.get("value").toString().toInt())
                                     totalincome.value = totalincome.value?.plus(value.data?.get("value").toString().toInt())
                                 }
                             }
@@ -56,8 +56,8 @@ class HomeViewModel : ViewModel() {
                             if (value != null)
                             {
                                 if (value.data?.get("value") != null) {
-                                    totalspending.value = totalspending.value?.plus(value.data?.get("value").toString().toInt())
-                                    total.value= totalincome.value!! - totalspending.value!!
+                                    totalspending.value = totalspending.value?.minus(value.data?.get("value").toString().toInt())
+                                    total.value = total.value?.minus(value.data?.get("value").toString().toInt())
                                 }
                             }
                         }
